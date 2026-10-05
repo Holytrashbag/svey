@@ -30,6 +30,7 @@ jobs:
             ci
             chore
           # Lower-case start, e.g. "feat(tracker): persist life totals".
-          subjectPattern: ^(?![A-Z]).+$
+          # Dependabot always writes "Bump ..." and can't be configured not to.
+          subjectPattern: ^(?:(?![A-Z])|Bump ).+$
           subjectPatternError: |
             The subject "{subject}" should start with a lower-case letter.

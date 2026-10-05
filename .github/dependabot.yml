@@ -18,11 +18,11 @@ updates:
       actions:
         patterns: ["*"]
 
+  # One pnpm workspace with a single root lockfile: only list the root.
+  # Dependabot finds apps/* from pnpm-workspace.yaml; listing them as separate
+  # directories yields duplicate PRs that bump package.json without the lockfile.
   - package-ecosystem: npm
-    directories:
-      - /
-      - /apps/api
-      - /apps/frontend
+    directory: /
     schedule:
       interval: weekly
       day: monday
