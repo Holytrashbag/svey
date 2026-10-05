@@ -146,8 +146,8 @@ importers:
         specifier: ^10.1.8
         version: 10.1.8(eslint@10.11.0(jiti@2.7.0))
       eslint-plugin-oxlint:
-        specifier: ~1.85.0
-        version: 1.85.0(oxlint@1.86.0)
+        specifier: ~1.86.0
+        version: 1.86.0(oxlint@1.86.0)
       eslint-plugin-vue:
         specifier: ~10.11.1
         version: 10.11.1(@typescript-eslint/parser@8.70.1(eslint@10.11.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.11.0(jiti@2.7.0))(vue-eslint-parser@10.4.1(eslint@10.11.0(jiti@2.7.0)))
@@ -2903,10 +2903,10 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
 
-  eslint-plugin-oxlint@1.85.0:
-    resolution: {integrity: sha512-ea+6IH4JRVX1le3C6KLNZ181qhCQwGPDO5kTzAZ8OM3joF4656G0RN8OOXaly78L2RAFuREYQEUIlwOjy0YG8A==}
+  eslint-plugin-oxlint@1.86.0:
+    resolution: {integrity: sha512-AYBDGxR/a8kJmUeZBZ98TF5+Kihg8LvWU4EEYoIv5nsEml18kXCD9b4RsqxLz4BiXD7PcrvrCO0/t16NmaFR1A==}
     peerDependencies:
-      oxlint: ~1.85.0
+      oxlint: ~1.86.0
 
   eslint-plugin-vue@10.11.1:
     resolution: {integrity: sha512-pasVXhl7wUmIvhujoqs/m0mJ9r59QW1IR9XXYKGR0FETzSM+Hhlf4qKIYgWiDDP+9YKv4YfbwskD7LqIdVcgQw==}
@@ -7437,7 +7437,7 @@ snapshots:
     dependencies:
       eslint: 10.11.0(jiti@2.7.0)
 
-  eslint-plugin-oxlint@1.85.0(oxlint@1.86.0):
+  eslint-plugin-oxlint@1.86.0(oxlint@1.86.0):
     dependencies:
       jsonc-parser: 3.3.1
       oxlint: 1.86.0
