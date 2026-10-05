@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
-    "@types/nodemailer": "^8.0.1",
+    "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.23.1",
     "drizzle-kit": "^0.31.11",
     "fastify-cli": "^8.0.2",
