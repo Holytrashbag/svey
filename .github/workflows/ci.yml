@@ -1,10 +1,12 @@
 name: CI
 
-# Lint, type-check, test and build the whole monorepo. Runs on every push and
-# pull request, and is reused by deploy.yml as a gate before shipping.
+# Lint, type-check, test and build the whole monorepo. Runs on pull requests
+# (required to merge) and on main, and is reused by deploy.yml as a gate before
+# shipping.
 on:
-  push:
   pull_request:
+  push:
+    branches: [main]
   workflow_call:
 
 permissions:

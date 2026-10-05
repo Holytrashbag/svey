@@ -13,6 +13,18 @@ Types are defined where they're used (routes/services on the API, `src/types/api
 
 ---
 
+## Workflow (GitHub flow)
+
+- **Never commit or push to `main`** — it's protected (PR + green CI required, linear history). Every change goes on a branch from `origin/main`: `feat/…`, `fix/…`, `chore/…`, `docs/…`, `refactor/…`, `test/…`, `ci/…`
+- Branch commits can be granular; they're squashed away. Still end each with the `Co-Authored-By` trailer
+- Open the PR with `gh pr create`; the **PR title must be a Conventional Commit** (`feat(tracker): …`, lower-case subject) — it becomes the commit on `main` and feeds the changelog. Fill in `.github/pull_request_template.md`
+- Required checks: **CI** (`pnpm lint:check && pnpm check-types && pnpm test && pnpm build`) and **Conventional PR title**. Run CI locally before pushing
+- Merge with `gh pr merge --squash` only when the user asks — **merging deploys to production** (migrations included)
+- Don't merge the release-please PR (`chore(main): release x.y.z`) unless asked; it cuts a version
+- Details: [CONTRIBUTING.md](../CONTRIBUTING.md)
+
+---
+
 ## Commands
 
 Run from the **repo root**:
