@@ -33,6 +33,11 @@ updates:
       prefix: fix
       prefix-development: chore
       include: scope
+    ignore:
+      # @types/node must match the Node major we run (Dockerfiles, CI); bump
+      # it together with them instead.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       # Minor/patch bumps land together; majors get their own PR to review.
       minor-and-patch:
