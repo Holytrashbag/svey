@@ -1,0 +1,205 @@
+{
+  "guest": "Guest",
+  "seat": "Seat {n}",
+  "you": "You",
+  "deathCause": {
+    "life": "Lethal damage",
+    "cmdr": "Commander damage",
+    "poison": "Poison",
+    "manual": "Player called it",
+    "concede": "Conceded",
+    "eliminated": "Eliminated"
+  },
+  "relDeath": { "secAgo": "{n}s ago", "minAgo": "{n} min ago" },
+  "setup": {
+    "newGame": "New game",
+    "saved": "Saved",
+    "from": "From",
+    "setTheTable": "Set the table",
+    "intro": "Pick who's playing, then hand each of them a deck.",
+    "theTable": "The table",
+    "ofPlayers": "of {total} players",
+    "podWide": "Pod-wide",
+    "bracket": "Bracket {n}",
+    "bracketSpread": "Bracket spread",
+    "seatHint": "Seat players and assign their decks to start.",
+    "seats": "Seats",
+    "filled": "{filled} of {total} filled",
+    "seatsCount": "seats",
+    "tip": "Anyone at the table can lend a deck. Borrowed decks count toward the borrower's record, not the owner's.",
+    "startGame": "Start game",
+    "ctaSeat2": "Seat at least 2 players",
+    "ctaPickDeck": "Pick a deck for {missing} more",
+    "guestShort": "G"
+  },
+  "seatCard": {
+    "seat": "Seat",
+    "removePlayer": "Remove player",
+    "you": "You",
+    "guest": "Guest",
+    "addPlayer": "Add player",
+    "orGuest": "or guest",
+    "guestFallback": "Guest",
+    "borrowedFrom": "Borrowed from {name}",
+    "borrowedFallback": "Borrowed",
+    "pickDeck": "Pick a deck"
+  },
+  "playerSheet": {
+    "pickPlayer": "Pick a player",
+    "addGuest": "Add a guest",
+    "search": "Search {pod}",
+    "deckCount": "{n} deck | {n} decks",
+    "everyoneSeated": "Everyone in {pod} is already at the table.",
+    "addOneOff": "Add a one-off guest",
+    "guestExplain": "Guests don't join your playgroup — they're just at the table for this game. Their record won't affect pod standings.",
+    "guestNamePlaceholder": "Guest name",
+    "back": "Back",
+    "addGuestBtn": "Add guest"
+  },
+  "deckSheet": {
+    "pickDeckFor": "Pick a deck for {name}",
+    "pickDeck": "Pick a deck",
+    "intro": "Anyone at the table can lend a deck. Decks not owned by {name} are marked {borrowed}.",
+    "thisPlayer": "this player",
+    "borrowed": "borrowed",
+    "ownDecks": "{name}'s decks",
+    "borrowFromTable": "Borrow from the table",
+    "ownerSuffix": "{name}'s",
+    "empty": "No decks yet. Seat a player who has a deck and they can lend it around."
+  },
+  "tracker": {
+    "alive": "alive",
+    "pause": "Pause",
+    "resume": "Resume",
+    "gameMenu": "Game menu",
+    "poison": "poison",
+    "cmd": "cmd",
+    "eliminated": "Eliminated",
+    "winner": "Winner",
+    "lastStanding": "Last one standing",
+    "playerMenu": "Player menu",
+    "subtractLife": "Subtract 1 life",
+    "addLife": "Add 1 life",
+    "playerDied": "Player died",
+    "playerDiedSub": "Use when life math is off",
+    "concede": "Concede",
+    "concedeSub": "Drop out, keep the game going",
+    "cancel": "Cancel"
+  },
+  "menu": {
+    "title": "Game menu",
+    "subtitle": "Manage the table from here.",
+    "endGame": "End the game",
+    "endGameAlive": "{n} players still alive — eliminate them first",
+    "endGameReady": "Lock the winner and log the game",
+    "retireGame": "Retire game",
+    "retireGameSub": "Save what you tracked, log it with no winner. Counts toward games played.",
+    "cancelGame": "Cancel game",
+    "cancelGameSub": "Toss this game. Won't go on anyone's record.",
+    "cardArt": "Card art",
+    "illusBy": "{name} — illus. {artist}",
+    "artVia": "Art via Scryfall. Cards © Wizards of the Coast.",
+    "backToGame": "Back to game"
+  },
+  "manualDeath": {
+    "title": "{name} — eliminated?",
+    "subtitle": "Use this when something off-grid kills them: a player effect, life-set-to-0 spell, conceded mid-pile. Their life total stays as-is.",
+    "markEliminated": "Mark as eliminated",
+    "logsTime": "Logs the time as {time} and freezes their tile. The pod plays on.",
+    "notYet": "Not yet",
+    "confirm": "Confirm — they're out"
+  },
+  "cmdrDmg": {
+    "title": "Commander damage on {name}",
+    "subtitle": "21 from a single commander ends the game for them. Track each attacker separately.",
+    "less": "Less",
+    "more": "More"
+  },
+  "endReasons": {
+    "why": "Why?",
+    "whyHint": "· pick any that apply, optional",
+    "back": "Back",
+    "concede": {
+      "title": "{name} — concede",
+      "subtitle": "Drops out of the game. Logged as a loss, but the game keeps going for everyone else.",
+      "confirm": "Concede",
+      "reasons": {
+        "noway": { "label": "No path to win", "sub": "Math says it's done" },
+        "time": { "label": "Out of time", "sub": "Have to wrap up" },
+        "salty": { "label": "Not enjoying it", "sub": "Pod tilt happens" },
+        "rules": { "label": "Rules mistake", "sub": "Something can't be unwound" },
+        "social": { "label": "Got pulled away", "sub": "IRL beats Magic" }
+      }
+    },
+    "retire": {
+      "title": "Retire this game?",
+      "subtitle": "Save what you tracked so far, but log it with no winner. Decks won't get a win or loss — it still counts toward games played.",
+      "confirm": "Retire game",
+      "reasons": {
+        "time": { "label": "Out of time", "sub": "Venue closing, gotta go" },
+        "stall": { "label": "Long stall", "sub": "No one can close it out" },
+        "left": { "label": "Player had to leave", "sub": "Can't continue without them" },
+        "vibe": { "label": "Vibe died", "sub": "Just not happening tonight" },
+        "rules": { "label": "Unwindable mistake", "sub": "State can't be reconstructed" },
+        "other": { "label": "Other", "sub": "Add a note when you log it" }
+      }
+    },
+    "cancel": {
+      "title": "Cancel this game?",
+      "subtitle": "Throws out everything tracked so far. The game won't go into the pod's record.",
+      "confirm": "Cancel game",
+      "reasons": {
+        "mulligan": { "label": "Mass mulligan", "sub": "Everyone wants a redo" },
+        "rules": { "label": "Rules dispute", "sub": "Can't agree on a ruling" },
+        "misdeal": { "label": "Misdeal / cheat", "sub": "Hand wasn't clean" },
+        "time": { "label": "Out of time", "sub": "Save it for next week" },
+        "other": { "label": "Other", "sub": "Add a note when you log it" }
+      }
+    }
+  },
+  "survey": {
+    "title": "Survey",
+    "progress": "{current} / {total}",
+    "howFelt": "How did it feel, {name}?",
+    "winner": "Winner",
+    "eliminated": "Eliminated",
+    "funQuestion": "How much fun did you have?",
+    "agencyQuestion": "Did you feel in control?",
+    "addQuestion": "Anything to add?",
+    "optional": "(optional)",
+    "takeawayPlaceholder": "Highlights, gripes, shoutouts...",
+    "skip": "Skip",
+    "saving": "Saving...",
+    "finish": "Finish",
+    "nextPlayer": "Next player →"
+  },
+  "recap": {
+    "endReason": { "won": "Win", "draw": "Draw", "abandoned": "Abandoned" },
+    "deathCause": {
+      "life": "Lethal damage",
+      "cmdr_dmg": "Commander damage",
+      "poison": "Poison",
+      "conceded": "Conceded",
+      "special": "Special elimination",
+      "eliminated": "Eliminated"
+    },
+    "winner": "Winner",
+    "draw": "Draw",
+    "abandoned": "Abandoned",
+    "noDeck": "No deck",
+    "players": "Players",
+    "duration": "Duration",
+    "result": "Result",
+    "won": "Won",
+    "life": "{n} life",
+    "howItFelt": "How it felt",
+    "responses": "({n} response) | ({n} responses)",
+    "fun": "Fun",
+    "agency": "Agency",
+    "deleteGame": "Delete game",
+    "deleteConfirmTitle": "Delete this game?",
+    "deleteConfirmBody": "This permanently removes the game and all survey responses.",
+    "deleting": "Deleting...",
+    "yesDelete": "Yes, delete"
+  }
+}

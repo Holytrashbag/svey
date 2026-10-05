@@ -1,0 +1,2 @@
+ALTER TABLE deck ADD COLUMN is_archived BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE deck ADD COLUMN color_identity TEXT[] NOT NULL DEFAULT '{}';

@@ -1,0 +1,30 @@
+{
+  "cancel": "Cancel",
+  "save": "Save",
+  "saving": "Saving...",
+  "add": "Add",
+  "edit": "Edit",
+  "delete": "Delete",
+  "remove": "Remove",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "confirm": "Confirm",
+  "retry": "Retry",
+  "loading": "Loading...",
+  "search": "Search",
+  "yes": "Yes",
+  "no": "No",
+  "nav": {
+    "home": "Home",
+    "decks": "Decks",
+    "pods": "Pods",
+    "you": "You"
+  },
+  "pwa": {
+    "updateAvailable": "A new version of Svey is available.",
+    "offlineReady": "Svey is ready to work offline.",
+    "reload": "Reload"
+  }
+}

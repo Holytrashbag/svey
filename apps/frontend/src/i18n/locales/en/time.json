@@ -1,0 +1,10 @@
+{
+  "never": "Never",
+  "justNow": "Just now",
+  "minAgo": "{n} min ago",
+  "hAgo": "{n}h ago",
+  "dAgo": "{n}d ago",
+  "wAgo": "{n}w ago",
+  "moAgo": "{n}mo ago",
+  "yAgo": "{n}y ago"
+}

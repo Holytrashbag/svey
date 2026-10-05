@@ -1,0 +1,105 @@
+# Production stack for Svey (single-host Docker Compose).
+#
+# Deploy:
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#
+# Update after a git pull:
+#   docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
+#
+# Logs:
+#   docker compose -f docker-compose.prod.yml logs -f api
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    # Send container logs to the host journal, which enforces the retention
+    # window (see scripts/cloud-init.yaml: systemd-journald MaxRetentionSec=14d).
+    logging: &journald
+      driver: journald
+      options:
+        tag: "{{.Name}}"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # No host port published — Postgres is only reachable on the internal network.
+
+  api:
+    # CI deploys pull this from GHCR with IMAGE_TAG=<git sha>; defaults to
+    # `latest` for manual use. `build:` still lets you build locally.
+    image: ghcr.io/holytrashbag/svey-api:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    logging: *journald
+    env_file:
+      - .env.prod
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      UPLOADS_DIR: /data/uploads
+      # Built from the POSTGRES_* vars so the password lives in one place.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    volumes:
+      - uploads_data:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  caddy:
+    image: ghcr.io/holytrashbag/svey-web:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      args:
+        # Public origin baked into the SPA build (same origin as the site).
+        VITE_API_URL: ${SITE_URL}
+        # Impressum/Datenschutz operator details (see .env.prod.example).
+        VITE_LEGAL_NAME: ${VITE_LEGAL_NAME:-}
+        VITE_LEGAL_STREET: ${VITE_LEGAL_STREET:-}
+        VITE_LEGAL_CITY: ${VITE_LEGAL_CITY:-}
+        VITE_LEGAL_EMAIL: ${VITE_LEGAL_EMAIL:-}
+        VITE_LEGAL_PHONE: ${VITE_LEGAL_PHONE:-}
+    restart: unless-stopped
+    logging: *journald
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  # Stored on the attached Hetzner volume (DATA_DIR, default /mnt/data) so the
+  # data survives server rebuilds/resizes. These directories must exist on the
+  # box before the first deploy.
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_DIR:-/mnt/data}/postgres
+  uploads_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DATA_DIR:-/mnt/data}/uploads
+  # Caddy certs/state live on the local disk (cheap to re-fetch).
+  caddy_data:
+  caddy_config:

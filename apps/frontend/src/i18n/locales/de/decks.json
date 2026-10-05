@@ -1,0 +1,134 @@
+{
+  "title": "Meine Decks",
+  "active": "{count} aktiv",
+  "addDeck": "Deck hinzufügen",
+  "filters": { "all": "Alle", "archived": "Archiviert" },
+  "count": "{n} Deck | {n} Decks",
+  "sortBy": "Sortieren:",
+  "sorts": { "wins": "Meiste Siege", "winrate": "Beste Siegquote", "name": "Name" },
+  "row": { "bracket": "Bracket {n}", "games": "{n} Spiel | {n} Spiele" },
+  "empty": {
+    "archived": { "title": "Keine archivierten Decks", "sub": "Decks, die du nicht mehr trackst, landen hier." },
+    "hot": { "title": "Nichts am Glühen", "sub": "Gewinn 2 Spiele mit einem Deck, um es hier zu sehen." },
+    "cold": { "title": "Alles im Einsatz", "sub": "Decks, die 4+ Wochen brachliegen, tauchen hier auf." },
+    "all": { "title": "Noch keine Decks", "sub": "Füg eins hinzu und wir fangen an zu tracken." },
+    "addFirst": "Füg dein erstes Deck hinzu"
+  },
+  "add": {
+    "importDeck": "Deck importieren",
+    "archidektUrl": "Archidekt-URL",
+    "urlPlaceholder": "archidekt.com/decks/...",
+    "importingDeck": "Deck wird importiert...",
+    "importing": "Wird importiert...",
+    "importErrorFallback": "Da ist was schiefgelaufen. Prüf die URL.",
+    "detected": "{service} erkannt",
+    "supported": "Unterstützt",
+    "soon": "Bald",
+    "hint": "Wir holen Commander, Liste und Farbidentität automatisch. Dein Bracket wird aus dem Inhalt geschätzt.",
+    "dropTitle": "Wirf ein Deck rein",
+    "dropBody": "Füg einen Archidekt-Link ein. Wir finden deinen Commander, setzen ein Bracket und bringen es in deinen Pods zum Leuchten."
+  },
+  "sheet": {
+    "title": "Deck hinzufügen",
+    "sub": "Füg einen Moxfield- oder Archidekt-Link ein, oder bau es von Grund auf.",
+    "importFromUrl": "Aus URL importieren",
+    "importFromUrlSub": "Moxfield, Archidekt, MTGGoldfish",
+    "justCommander": "Nur der Commander",
+    "justCommanderSub": "Jetzt Siege tracken, Liste später ergänzen"
+  },
+  "format": "Commander",
+  "detail": {
+    "tabs": { "cards": "Karten", "stats": "Statistiken", "about": "Info" },
+    "sync": {
+      "synced": "Synchronisiert",
+      "syncing": "Wird synchronisiert...",
+      "failed": "Sync fehlgeschlagen",
+      "syncingSub": "Neueste Version von Archidekt wird geholt",
+      "failedSub": "Archidekt nicht erreichbar",
+      "syncedSub": "{time} · Archidekt",
+      "resync": "Neu synchronisieren",
+      "retry": "Erneut versuchen"
+    }
+  },
+  "hero": {
+    "record": "Bilanz",
+    "size": "Größe",
+    "estCost": "Gesch. Wert",
+    "saltSum": "Salt-Summe",
+    "usd": "USD",
+    "illus": "Illus. {names}"
+  },
+  "bracket": {
+    "title": "Bracket",
+    "override": "Manuell",
+    "auto": "Auto",
+    "estimates": "Svey schätzt",
+    "estimatedHint": "Aus Inhalt geschätzt · zum Ändern tippen"
+  },
+  "cards": {
+    "searchPlaceholder": "Karten suchen",
+    "salt": "Salt",
+    "sort": { "type": "Typ", "cmc": "CMC", "name": "Name" },
+    "types": {
+      "Commander": "Commander",
+      "Planeswalker": "Planeswalker",
+      "Creature": "Kreaturen",
+      "Sorcery": "Hexereien",
+      "Instant": "Spontanzauber",
+      "Artifact": "Artefakte",
+      "Enchantment": "Verzauberungen",
+      "Land": "Länder",
+      "Other": "Andere"
+    }
+  },
+  "about": {
+    "format": "Format",
+    "cardCount": "Kartenanzahl",
+    "archetype": "Archetyp",
+    "estValue": "Geschätzter Wert",
+    "saltSum": "Salt-Summe",
+    "saltSub": "wie scharf der Tisch es findet",
+    "owner": "Besitzer",
+    "created": "Erstellt",
+    "source": "Quelle",
+    "open": "Öffnen",
+    "attribution": "Kartendaten und Artworks via Scryfall. Magic: The Gathering und alle Kartenbilder sind © Wizards of the Coast. Svey ist inoffizieller Fan-Content.",
+    "dangerZone": "Gefahrenzone",
+    "archive": "Dieses Deck archivieren"
+  },
+  "stats": {
+    "scopes": { "mine": "Meine Statistiken", "general": "Allgemein", "compare": "Vergleich" },
+    "loading": "Statistiken werden geladen...",
+    "compareIntro": "Du gegen alle, die diesen Commander spielen.",
+    "notEnoughCompare": "Noch nicht genug Daten zum Vergleichen.",
+    "you": "Du",
+    "average": "Durchschnitt",
+    "better": "besser",
+    "behind": "zurück",
+    "mineIntro": "Deine Bilanz mit diesem Deck über alle Gruppen hinweg.",
+    "generalIntro": "Alle Svey-Spieler, die diesen Commander gebaut haben.",
+    "mineNoData": "Du hast mit diesem Deck noch keine Spiele gespielt.",
+    "generalNoData": "Für dieses Deck wurden noch keine Spiele erfasst.",
+    "record": "Bilanz",
+    "winrate": "Siegquote",
+    "games": "Spiele",
+    "labels": {
+      "avgPlacement": "Durchschn. Platz",
+      "avgGame": "Durchschn. Spiel",
+      "funRating": "Spaß-Wertung",
+      "eliminated": "Ausgeschieden",
+      "winrate": "Siegquote"
+    },
+    "subs": { "ofFour": "von 4", "min": "Min.", "outOfFive": "/ 5", "pctOfGames": "{pct}% der Spiele" },
+    "bestMatchup": "Bestes Matchup",
+    "toughestMatchup": "Härtestes Matchup",
+    "unknown": "Unbekannt",
+    "winrateVsDeck": "Siegquote vs. Deck",
+    "winRate": "Siegquote",
+    "gamesCount": "{n} Spiel | {n} Spiele",
+    "matchupFavorable": "Vorteilhaftes Matchup",
+    "matchupUnfavorable": "Ungünstiges Matchup",
+    "matchupEven": "Ausgeglichenes Matchup",
+    "lastGames": "Letzte {n} Spiele"
+  }
+}

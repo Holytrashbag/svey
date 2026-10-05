@@ -1,0 +1,30 @@
+{
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "saving": "Wird gespeichert...",
+  "add": "Hinzufügen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "remove": "Entfernen",
+  "close": "Schließen",
+  "back": "Zurück",
+  "next": "Weiter",
+  "done": "Fertig",
+  "confirm": "Bestätigen",
+  "retry": "Erneut versuchen",
+  "loading": "Wird geladen...",
+  "search": "Suchen",
+  "yes": "Ja",
+  "no": "Nein",
+  "nav": {
+    "home": "Start",
+    "decks": "Decks",
+    "pods": "Pods",
+    "you": "Du"
+  },
+  "pwa": {
+    "updateAvailable": "Eine neue Version von Svey ist verfügbar.",
+    "offlineReady": "Svey funktioniert jetzt auch offline.",
+    "reload": "Neu laden"
+  }
+}

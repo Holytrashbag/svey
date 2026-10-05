@@ -1,0 +1,134 @@
+{
+  "title": "My decks",
+  "active": "{count} active",
+  "addDeck": "Add deck",
+  "filters": { "all": "All", "archived": "Archived" },
+  "count": "{n} deck | {n} decks",
+  "sortBy": "Sort:",
+  "sorts": { "wins": "Most wins", "winrate": "Best winrate", "name": "Name" },
+  "row": { "bracket": "Bracket {n}", "games": "{n} game | {n} games" },
+  "empty": {
+    "archived": { "title": "No archived decks", "sub": "Decks you stop tracking show up here." },
+    "hot": { "title": "Nothing on a heater", "sub": "Win 2 games with a deck to see it here." },
+    "cold": { "title": "Everything's seeing play", "sub": "Decks idle for 4+ weeks turn up here." },
+    "all": { "title": "No decks yet", "sub": "Add one and we'll start tracking." },
+    "addFirst": "Add your first deck"
+  },
+  "add": {
+    "importDeck": "Import deck",
+    "archidektUrl": "Archidekt URL",
+    "urlPlaceholder": "archidekt.com/decks/...",
+    "importingDeck": "Importing deck...",
+    "importing": "Importing...",
+    "importErrorFallback": "Something fizzled. Check the URL.",
+    "detected": "{service} detected",
+    "supported": "Supported",
+    "soon": "Soon",
+    "hint": "We pull the commander, list, and color identity automatically. Your bracket will be estimated from the contents.",
+    "dropTitle": "Drop a deck in",
+    "dropBody": "Paste an Archidekt link. We'll find your commander, set a bracket, and light it up across your pods."
+  },
+  "sheet": {
+    "title": "Add a deck",
+    "sub": "Paste a Moxfield or Archidekt link, or build it from scratch.",
+    "importFromUrl": "Import from URL",
+    "importFromUrlSub": "Moxfield, Archidekt, MTGGoldfish",
+    "justCommander": "Just the commander",
+    "justCommanderSub": "Track wins now, add the list later"
+  },
+  "format": "Commander",
+  "detail": {
+    "tabs": { "cards": "Cards", "stats": "Stats", "about": "About" },
+    "sync": {
+      "synced": "Synced",
+      "syncing": "Syncing...",
+      "failed": "Sync failed",
+      "syncingSub": "Pulling latest from Archidekt",
+      "failedSub": "Couldn't reach Archidekt",
+      "syncedSub": "{time} · Archidekt",
+      "resync": "Re-sync",
+      "retry": "Retry"
+    }
+  },
+  "hero": {
+    "record": "Record",
+    "size": "Size",
+    "estCost": "Est. cost",
+    "saltSum": "Salt sum",
+    "usd": "USD",
+    "illus": "Illus. {names}"
+  },
+  "bracket": {
+    "title": "Bracket",
+    "override": "Override",
+    "auto": "Auto",
+    "estimates": "Svey estimates",
+    "estimatedHint": "Estimated from contents · tap to override"
+  },
+  "cards": {
+    "searchPlaceholder": "Search cards",
+    "salt": "Salt",
+    "sort": { "type": "Type", "cmc": "CMC", "name": "Name" },
+    "types": {
+      "Commander": "Commander",
+      "Planeswalker": "Planeswalkers",
+      "Creature": "Creatures",
+      "Sorcery": "Sorceries",
+      "Instant": "Instants",
+      "Artifact": "Artifacts",
+      "Enchantment": "Enchantments",
+      "Land": "Lands",
+      "Other": "Other"
+    }
+  },
+  "about": {
+    "format": "Format",
+    "cardCount": "Card count",
+    "archetype": "Archetype",
+    "estValue": "Estimated value",
+    "saltSum": "Salt sum",
+    "saltSub": "how spicy the table thinks it is",
+    "owner": "Owner",
+    "created": "Created",
+    "source": "Source",
+    "open": "Open",
+    "attribution": "Card data and art via Scryfall. Magic: The Gathering and all card images are © Wizards of the Coast. Svey is unofficial Fan Content.",
+    "dangerZone": "Danger zone",
+    "archive": "Archive this deck"
+  },
+  "stats": {
+    "scopes": { "mine": "My stats", "general": "General", "compare": "Compare" },
+    "loading": "Loading stats...",
+    "compareIntro": "You vs. everyone running this commander.",
+    "notEnoughCompare": "Not enough data to compare yet.",
+    "you": "You",
+    "average": "Average",
+    "better": "better",
+    "behind": "behind",
+    "mineIntro": "Your record with this deck across all groups.",
+    "generalIntro": "All Svey players who built this commander.",
+    "mineNoData": "You haven't played any games with this deck yet.",
+    "generalNoData": "No games recorded for this deck yet.",
+    "record": "Record",
+    "winrate": "Winrate",
+    "games": "Games",
+    "labels": {
+      "avgPlacement": "Avg. placement",
+      "avgGame": "Avg. game",
+      "funRating": "Fun rating",
+      "eliminated": "Eliminated",
+      "winrate": "Winrate"
+    },
+    "subs": { "ofFour": "of 4", "min": "min", "outOfFive": "/ 5", "pctOfGames": "{pct}% of games" },
+    "bestMatchup": "Best matchup",
+    "toughestMatchup": "Toughest matchup",
+    "unknown": "Unknown",
+    "winrateVsDeck": "Winrate vs. deck",
+    "winRate": "win rate",
+    "gamesCount": "{n} game | {n} games",
+    "matchupFavorable": "Favorable matchup",
+    "matchupUnfavorable": "Unfavorable matchup",
+    "matchupEven": "Even matchup",
+    "lastGames": "Last {n} games"
+  }
+}

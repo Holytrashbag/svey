@@ -1,0 +1,8 @@
+{
+  "updated": "Last updated: {date}",
+  "germanOnly": "This document is available in German only. The German version is legally binding.",
+  "draft": {
+    "title": "Draft.",
+    "body": "This text is a technical template and has not been legally reviewed yet. Placeholders in square brackets {placeholder} must be filled in before the app goes public."
+  }
+}

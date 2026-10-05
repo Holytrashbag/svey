@@ -1,0 +1,30 @@
+{
+  "defaultName": "Player",
+  "emailNotVerified": "Email not verified",
+  "resend": "Resend",
+  "sending": "Sending...",
+  "sent": "Sent",
+  "memberSince": "Member since {date}",
+  "uploadFailed": "Upload failed",
+  "statsTitle": "Stats",
+  "totalGames": "Total Games",
+  "winRate": "Win Rate",
+  "totalWins": "Total Wins",
+  "avgPlace": "Avg Place",
+  "decksPiloted": "Decks piloted",
+  "noGames": "No games recorded yet.",
+  "deckRecord": "{wins}W · {games} games",
+  "menu": {
+    "editProfile": "Edit profile",
+    "language": "Language",
+    "signOut": "Sign out",
+    "deleteAccount": "Delete account"
+  },
+  "delete": {
+    "title": "Delete account",
+    "body": "This permanently deletes your account and any decks not used in a game, plus your survey responses. Past games stay in your pods, but your name is replaced with \"Deleted player\". This cannot be undone.",
+    "confirmPrompt": "Type {keyword} to confirm.",
+    "deleting": "Deleting...",
+    "couldNotDelete": "Could not delete account"
+  }
+}

@@ -1,0 +1,33 @@
+# Svey edge: serves the SPA and reverse-proxies the API on one origin.
+# {$SITE_ADDRESS} is provided by docker-compose (e.g. svey.app for
+# automatic HTTPS via Let's Encrypt, or :80 for local testing).
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	# Backend API — every app endpoint is namespaced under /api
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	# User uploads (avatars) served by the API from its persistent volume
+	handle /uploads/* {
+		reverse_proxy api:3000
+	}
+
+	# SPA: serve static files, fall back to index.html for client-side routes
+	handle {
+		root * /srv
+
+		# Fingerprinted build assets never change — cache them aggressively
+		@assets path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+
+		# Entrypoints + service worker must revalidate so new deploys and PWA
+		# updates are picked up promptly
+		@nocache path /index.html /sw.js /registerSW.js /manifest.webmanifest /workbox-*.js
+		header @nocache Cache-Control "no-cache"
+
+		try_files {path} /index.html
+		file_server
+	}
+}

@@ -1,0 +1,8 @@
+{
+  "updated": "Stand: {date}",
+  "germanOnly": "Dieses Dokument ist nur auf Deutsch verfügbar. Die deutsche Fassung ist rechtlich verbindlich.",
+  "draft": {
+    "title": "Entwurf.",
+    "body": "Dieser Text ist eine technische Vorlage und noch nicht rechtlich geprüft. Platzhalter in eckigen Klammern {placeholder} müssen ausgefüllt werden, bevor die App öffentlich geht."
+  }
+}

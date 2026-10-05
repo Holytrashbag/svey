@@ -1,0 +1,176 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Backgrounds ──────────────────────────────── */
+  --color-bg-0: #06070D;
+  --color-bg-1: #0E1120;
+  --color-bg-2: #181C30;
+  --color-bg-3: #232845;
+
+  /* ── Foreground ───────────────────────────────── */
+  --color-fg-0: #F5F4FB;
+  --color-fg-1: #C4C1D8;
+  --color-fg-2: #8A88A3;
+  --color-fg-3: #5A586E;
+  --color-fg-4: #3A3A4D;        /* separator dots, deepest muted */
+  --color-arcane-soft: #C4B5FD;  /* light arcane (You text, accents) */
+
+  /* ── Accents ──────────────────────────────────── */
+  --color-arcane:   #8B5CF6;
+  --color-arcane-2: #A78BFA;
+  --color-arcane-d: #6D28D9;
+
+  --color-tide:   #14B8A6;
+  --color-tide-2: #2DD4BF;
+  --color-tide-d: #0F766E;
+
+  --color-crown:   #F4B942;
+  --color-crown-2: #FCD34D;
+  --color-crown-d: #CA8A04;
+
+  /* ── Semantic ─────────────────────────────────── */
+  --color-success: #34D399;
+  --color-warning: #FBBF24;
+  --color-danger:  #F87171;
+
+  /* ── MTG color identity ───────────────────────── */
+  --color-mtg-w: #F3E4B5;
+  --color-mtg-u: #4A8FE7;
+  --color-mtg-b: #6B5B85;
+  --color-mtg-r: #E8654E;
+  --color-mtg-g: #4BAE6E;
+  --color-mtg-c: #B8B8C8;
+
+  /* ── Overlay / divider colors ─────────────────── */
+  --color-divider:        rgba(255, 255, 255, 0.06);
+  --color-divider-soft:   rgba(255, 255, 255, 0.04);
+  --color-divider-strong: rgba(255, 255, 255, 0.10);
+  --color-hairline:       rgba(255, 255, 255, 0.05);
+  --color-overlay-1:      rgba(255, 255, 255, 0.04);
+  --color-overlay-2:      rgba(255, 255, 255, 0.08);
+  --color-overlay-3:      rgba(255, 255, 255, 0.12);
+  --color-overlay-4:      rgba(255, 255, 255, 0.18);
+  --color-overlay-5:      rgba(255, 255, 255, 0.20);
+  --color-scrim-soft:     rgba(6, 7, 13, 0.45);
+  --color-scrim:          rgba(6, 7, 13, 0.78);
+  --color-scrim-strong:   rgba(6, 7, 13, 0.95);
+
+  /* Accent washes used as tag/chip backgrounds */
+  --color-arcane-wash:  rgba(139, 92, 246, 0.18);
+  --color-arcane-edge:  rgba(167, 139, 250, 0.40);
+  --color-arcane-glow:  rgba(139, 92, 246, 0.10);
+  --color-tide-wash:    rgba(45, 212, 191, 0.14);
+  --color-crown-wash:   rgba(244, 185, 66, 0.18);
+  --color-crown-wash-d: rgba(244, 185, 66, 0.14);
+  --color-danger-wash:  rgba(248, 113, 113, 0.30);
+
+  /* ── Typography ───────────────────────────────── */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Manrope', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* Semantic text size scale (snapped) */
+  --text-eyebrow:     9px;
+  --text-meta:       11px;
+  --text-caption:    12px;
+  --text-body-sm:    13px;
+  --text-body:       14px;
+  --text-body-lg:    15px;
+  --text-stat:       18px;
+  --text-display-sm: 22px;
+  --text-display:    28px;
+
+  /* Letter spacing (5 named values) */
+  --tracking-headline: -0.025em;
+  --tracking-tight:    -0.02em;
+  --tracking-snug:     -0.005em;
+  --tracking-wide:      0.06em;
+  --tracking-eyebrow:   0.10em;
+
+  /* ── Border radius ────────────────────────────── */
+  --radius-sm:  4px;   /* tags, progress fills */
+  --radius-md:  10px;  /* buttons, inputs, chips */
+  --radius-lg:  12px;  /* cards */
+  --radius-xl:  20px;  /* sheets, modals */
+  --radius-2xl: 22px;  /* bottom nav */
+}
+
+@layer base {
+  html,
+  body {
+    @apply bg-bg-0 text-fg-0 font-body antialiased;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0;
+    color: var(--color-fg-0);
+  }
+
+  h1 { font-size: 28px; font-weight: 700; }
+  h2 { font-size: 22px; font-weight: 700; }
+  h3 { font-size: 18px; font-weight: 600; }
+  h4 { font-size: 15px; font-weight: 600; letter-spacing: 0; }
+
+  p { margin: 0; }
+}
+
+@layer components {
+  /* Uppercase eyebrow label: 9px bold wide-tracked muted */
+  .text-eyebrow-label {
+    @apply font-bold uppercase text-fg-3 tracking-eyebrow;
+    font-size: var(--text-eyebrow);
+    line-height: 1;
+  }
+  .text-eyebrow-label-soft {
+    @apply font-bold uppercase text-fg-2 tracking-eyebrow;
+    font-size: var(--text-eyebrow);
+    line-height: 1;
+  }
+
+  /* Hero / dashboard numeric value */
+  .text-stat-value {
+    @apply font-display font-bold text-fg-0 tabular-nums tracking-tight;
+    font-size: var(--text-stat);
+    line-height: 1;
+  }
+  .text-stat-value-xl {
+    @apply font-display font-bold text-fg-0 tabular-nums tracking-headline;
+    font-size: var(--text-display);
+    line-height: 1;
+  }
+
+  /* Mono meta caption */
+  .text-meta-mono {
+    @apply font-mono font-semibold text-fg-2;
+    font-size: var(--text-meta);
+  }
+
+  /* Card surface */
+  .card-surface {
+    @apply bg-bg-1 border border-divider rounded-lg;
+  }
+
+  /* Dividers */
+  .divider-hairline { @apply h-px bg-divider; }
+  .divider-vertical { @apply w-px bg-divider self-stretch; }
+
+  /* Tag / pill family (You / Guest / Borrowed) */
+  .tag-pill {
+    @apply inline-flex items-center gap-1 rounded-sm font-bold uppercase tracking-wide;
+    font-size: var(--text-eyebrow);
+    padding: 2px 5px;
+  }
+  .tag-pill--you      { @apply bg-arcane-wash text-arcane-2; }
+  .tag-pill--guest    { @apply bg-crown-wash text-crown; }
+  .tag-pill--borrowed { @apply bg-tide-wash text-tide-2; padding: 2px 6px; }
+}
+
+@keyframes ddPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}

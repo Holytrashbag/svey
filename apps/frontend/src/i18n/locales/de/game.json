@@ -1,0 +1,205 @@
+{
+  "guest": "Gast",
+  "seat": "Platz {n}",
+  "you": "Du",
+  "deathCause": {
+    "life": "Tödlicher Schaden",
+    "cmdr": "Commander-Schaden",
+    "poison": "Gift",
+    "manual": "Manuell beendet",
+    "concede": "Aufgegeben",
+    "eliminated": "Ausgeschieden"
+  },
+  "relDeath": { "secAgo": "vor {n}s", "minAgo": "vor {n} Min." },
+  "setup": {
+    "newGame": "Neues Spiel",
+    "saved": "Gespeichert",
+    "from": "Aus",
+    "setTheTable": "Tisch decken",
+    "intro": "Wähl, wer spielt, und gib jedem ein Deck.",
+    "theTable": "Der Tisch",
+    "ofPlayers": "von {total} Spielern",
+    "podWide": "Pod-weit",
+    "bracket": "Bracket {n}",
+    "bracketSpread": "Bracket-Spanne",
+    "seatHint": "Setz Spieler und weis ihnen Decks zu, um zu starten.",
+    "seats": "Plätze",
+    "filled": "{filled} von {total} besetzt",
+    "seatsCount": "Plätze",
+    "tip": "Jeder am Tisch kann ein Deck verleihen. Geliehene Decks zählen zur Bilanz des Ausleihers, nicht des Besitzers.",
+    "startGame": "Spiel starten",
+    "ctaSeat2": "Setz mindestens 2 Spieler",
+    "ctaPickDeck": "Wähl ein Deck für {missing} weitere",
+    "guestShort": "G"
+  },
+  "seatCard": {
+    "seat": "Platz",
+    "removePlayer": "Spieler entfernen",
+    "you": "Du",
+    "guest": "Gast",
+    "addPlayer": "Spieler hinzufügen",
+    "orGuest": "oder Gast",
+    "guestFallback": "Gast",
+    "borrowedFrom": "Geliehen von {name}",
+    "borrowedFallback": "Geliehen",
+    "pickDeck": "Deck wählen"
+  },
+  "playerSheet": {
+    "pickPlayer": "Spieler wählen",
+    "addGuest": "Gast hinzufügen",
+    "search": "{pod} durchsuchen",
+    "deckCount": "{n} Deck | {n} Decks",
+    "everyoneSeated": "Alle in {pod} sind schon am Tisch.",
+    "addOneOff": "Einmaligen Gast hinzufügen",
+    "guestExplain": "Gäste treten deiner Playgroup nicht bei — sie sind nur für dieses Spiel am Tisch. Ihre Bilanz beeinflusst die Pod-Tabelle nicht.",
+    "guestNamePlaceholder": "Gastname",
+    "back": "Zurück",
+    "addGuestBtn": "Gast hinzufügen"
+  },
+  "deckSheet": {
+    "pickDeckFor": "Deck wählen für {name}",
+    "pickDeck": "Deck wählen",
+    "intro": "Jeder am Tisch kann ein Deck verleihen. Decks, die nicht {name} gehören, sind als {borrowed} markiert.",
+    "thisPlayer": "diesen Spieler",
+    "borrowed": "geliehen",
+    "ownDecks": "{name}s Decks",
+    "borrowFromTable": "Vom Tisch leihen",
+    "ownerSuffix": "{name}s",
+    "empty": "Noch keine Decks. Setz einen Spieler mit Deck, dann kann er es verleihen."
+  },
+  "tracker": {
+    "alive": "am Leben",
+    "pause": "Pause",
+    "resume": "Weiter",
+    "gameMenu": "Spielmenü",
+    "poison": "Gift",
+    "cmd": "Cmd",
+    "eliminated": "Ausgeschieden",
+    "winner": "Sieger",
+    "lastStanding": "Als Letzter übrig",
+    "playerMenu": "Spielermenü",
+    "subtractLife": "1 Leben abziehen",
+    "addLife": "1 Leben hinzufügen",
+    "playerDied": "Spieler gestorben",
+    "playerDiedSub": "Nutzen, wenn die Lebensrechnung nicht stimmt",
+    "concede": "Aufgeben",
+    "concedeSub": "Aussteigen, Spiel läuft weiter",
+    "cancel": "Abbrechen"
+  },
+  "menu": {
+    "title": "Spielmenü",
+    "subtitle": "Verwalte den Tisch von hier.",
+    "endGame": "Spiel beenden",
+    "endGameAlive": "{n} Spieler noch am Leben — erst ausschalten",
+    "endGameReady": "Sieger festlegen und Spiel erfassen",
+    "retireGame": "Ohne Sieger beenden",
+    "retireGameSub": "Speichert, was du getrackt hast, ohne Sieger. Zählt zu den gespielten Spielen.",
+    "cancelGame": "Spiel verwerfen",
+    "cancelGameSub": "Wirf dieses Spiel weg. Kommt in niemandes Bilanz.",
+    "cardArt": "Kartenartwork",
+    "illusBy": "{name} — Illus. {artist}",
+    "artVia": "Artwork via Scryfall. Karten © Wizards of the Coast.",
+    "backToGame": "Zurück zum Spiel"
+  },
+  "manualDeath": {
+    "title": "{name} — ausgeschieden?",
+    "subtitle": "Nutze das, wenn etwas Ungewöhnliches sie tötet: ein Spielereffekt, ein Leben-auf-0-Zauber, mitten im Stapel aufgegeben. Ihr Lebenstotal bleibt wie es ist.",
+    "markEliminated": "Als ausgeschieden markieren",
+    "logsTime": "Erfasst die Zeit als {time} und friert ihre Kachel ein. Der Pod spielt weiter.",
+    "notYet": "Noch nicht",
+    "confirm": "Bestätigen — sie sind raus"
+  },
+  "cmdrDmg": {
+    "title": "Commander-Schaden an {name}",
+    "subtitle": "21 von einem einzelnen Commander beendet das Spiel für sie. Tracke jeden Angreifer einzeln.",
+    "less": "Weniger",
+    "more": "Mehr"
+  },
+  "endReasons": {
+    "why": "Warum?",
+    "whyHint": "· wähl aus, was zutrifft, optional",
+    "back": "Zurück",
+    "concede": {
+      "title": "{name} — aufgeben",
+      "subtitle": "Steigt aus dem Spiel aus. Als Niederlage erfasst, aber das Spiel läuft für alle anderen weiter.",
+      "confirm": "Aufgeben",
+      "reasons": {
+        "noway": { "label": "Kein Weg zum Sieg", "sub": "Die Mathematik sagt: vorbei" },
+        "time": { "label": "Keine Zeit mehr", "sub": "Müssen Schluss machen" },
+        "salty": { "label": "Macht keinen Spaß", "sub": "Pod-Tilt passiert" },
+        "rules": { "label": "Regelfehler", "sub": "Etwas lässt sich nicht zurücknehmen" },
+        "social": { "label": "Weggerufen worden", "sub": "RL schlägt Magic" }
+      }
+    },
+    "retire": {
+      "title": "Dieses Spiel ohne Sieger beenden?",
+      "subtitle": "Speichert, was du bisher getrackt hast, aber ohne Sieger. Decks bekommen keinen Sieg oder Niederlage — es zählt trotzdem zu den gespielten Spielen.",
+      "confirm": "Ohne Sieger beenden",
+      "reasons": {
+        "time": { "label": "Keine Zeit mehr", "sub": "Location schließt, wir müssen los" },
+        "stall": { "label": "Langer Stillstand", "sub": "Keiner kann es zu Ende bringen" },
+        "left": { "label": "Spieler musste gehen", "sub": "Geht nicht ohne sie weiter" },
+        "vibe": { "label": "Stimmung gekippt", "sub": "Heute läuft's einfach nicht" },
+        "rules": { "label": "Nicht behebbarer Fehler", "sub": "Spielzustand nicht rekonstruierbar" },
+        "other": { "label": "Sonstiges", "sub": "Notiz beim Erfassen hinzufügen" }
+      }
+    },
+    "cancel": {
+      "title": "Dieses Spiel verwerfen?",
+      "subtitle": "Wirft alles bisher Getrackte weg. Das Spiel kommt nicht in die Pod-Bilanz.",
+      "confirm": "Spiel verwerfen",
+      "reasons": {
+        "mulligan": { "label": "Massen-Mulligan", "sub": "Alle wollen neu" },
+        "rules": { "label": "Regelstreit", "sub": "Können uns nicht einigen" },
+        "misdeal": { "label": "Fehlgeben / Cheat", "sub": "Hand war nicht sauber" },
+        "time": { "label": "Keine Zeit mehr", "sub": "Heb's für nächste Woche auf" },
+        "other": { "label": "Sonstiges", "sub": "Notiz beim Erfassen hinzufügen" }
+      }
+    }
+  },
+  "survey": {
+    "title": "Umfrage",
+    "progress": "{current} / {total}",
+    "howFelt": "Wie war's, {name}?",
+    "winner": "Sieger",
+    "eliminated": "Ausgeschieden",
+    "funQuestion": "Wie viel Spaß hattest du?",
+    "agencyQuestion": "Hattest du das Gefühl, Kontrolle zu haben?",
+    "addQuestion": "Noch etwas hinzuzufügen?",
+    "optional": "(optional)",
+    "takeawayPlaceholder": "Highlights, Beschwerden, Shoutouts...",
+    "skip": "Überspringen",
+    "saving": "Wird gespeichert...",
+    "finish": "Fertig",
+    "nextPlayer": "Nächster Spieler →"
+  },
+  "recap": {
+    "endReason": { "won": "Sieg", "draw": "Unentschieden", "abandoned": "Abgebrochen" },
+    "deathCause": {
+      "life": "Tödlicher Schaden",
+      "cmdr_dmg": "Commander-Schaden",
+      "poison": "Gift",
+      "conceded": "Aufgegeben",
+      "special": "Spezial-Ausscheiden",
+      "eliminated": "Ausgeschieden"
+    },
+    "winner": "Sieger",
+    "draw": "Unentschieden",
+    "abandoned": "Abgebrochen",
+    "noDeck": "Kein Deck",
+    "players": "Spieler",
+    "duration": "Dauer",
+    "result": "Ergebnis",
+    "won": "Gewonnen",
+    "life": "{n} Leben",
+    "howItFelt": "Wie es sich anfühlte",
+    "responses": "({n} Antwort) | ({n} Antworten)",
+    "fun": "Spaß",
+    "agency": "Kontrolle",
+    "deleteGame": "Spiel löschen",
+    "deleteConfirmTitle": "Dieses Spiel löschen?",
+    "deleteConfirmBody": "Entfernt das Spiel und alle Umfrageantworten dauerhaft.",
+    "deleting": "Wird gelöscht...",
+    "yesDelete": "Ja, löschen"
+  }
+}

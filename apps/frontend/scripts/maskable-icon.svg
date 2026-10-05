@@ -1,0 +1,11 @@
+<svg width="512" height="512" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Svey">
+  <!-- Full-bleed background: no rounded corners, so the maskable safe zone is never transparent -->
+  <rect x="0" y="0" width="128" height="128" fill="#8B5CF6"></rect>
+
+  <!-- Logo content scaled to ~72% and recentred into the maskable safe zone -->
+  <g transform="translate(64 64) scale(0.72) translate(-64 -58)">
+    <path d="M79 30 H50 a14 14 0 0 0 0 28 h28 a14 14 0 0 1 0 28 H49" stroke="#F5F4FB" stroke-width="14" stroke-linecap="butt" fill="none"></path>
+    <rect x="79" y="23" width="14" height="14" rx="3" fill="#F4B942"></rect>
+    <rect x="35" y="79" width="14" height="14" rx="3" fill="#14B8A6"></rect>
+  </g>
+</svg>

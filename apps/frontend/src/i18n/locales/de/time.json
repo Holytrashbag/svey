@@ -1,0 +1,10 @@
+{
+  "never": "Nie",
+  "justNow": "Gerade eben",
+  "minAgo": "vor {n} Min.",
+  "hAgo": "vor {n} Std.",
+  "dAgo": "vor {n} T.",
+  "wAgo": "vor {n} Wo.",
+  "moAgo": "vor {n} Mon.",
+  "yAgo": "vor {n} J."
+}

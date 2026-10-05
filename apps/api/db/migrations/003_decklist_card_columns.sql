@@ -1,0 +1,5 @@
+ALTER TABLE decklist_card ADD COLUMN quantity   INT   NOT NULL DEFAULT 1;
+ALTER TABLE decklist_card ADD COLUMN card_type  TEXT  NOT NULL DEFAULT '';
+ALTER TABLE decklist_card ADD COLUMN mana_cost  TEXT  NOT NULL DEFAULT '';
+ALTER TABLE decklist_card ADD COLUMN cmc        FLOAT NOT NULL DEFAULT 0;
+ALTER TABLE decklist_card ADD COLUMN salt_score FLOAT NOT NULL DEFAULT 0;

@@ -1,0 +1,30 @@
+{
+  "defaultName": "Spieler",
+  "emailNotVerified": "E-Mail nicht bestätigt",
+  "resend": "Erneut senden",
+  "sending": "Wird gesendet...",
+  "sent": "Gesendet",
+  "memberSince": "Mitglied seit {date}",
+  "uploadFailed": "Upload fehlgeschlagen",
+  "statsTitle": "Statistiken",
+  "totalGames": "Spiele gesamt",
+  "winRate": "Siegquote",
+  "totalWins": "Siege gesamt",
+  "avgPlace": "Durchschn. Platz",
+  "decksPiloted": "Gespielte Decks",
+  "noGames": "Noch keine Spiele erfasst.",
+  "deckRecord": "{wins} Siege · {games} Spiele",
+  "menu": {
+    "editProfile": "Profil bearbeiten",
+    "language": "Sprache",
+    "signOut": "Abmelden",
+    "deleteAccount": "Konto löschen"
+  },
+  "delete": {
+    "title": "Konto löschen",
+    "body": "Dies löscht dein Konto und alle Decks, die in keinem Spiel verwendet wurden, sowie deine Umfrageantworten dauerhaft. Vergangene Spiele bleiben in deinen Pods erhalten, aber dein Name wird durch \"Gelöschter Spieler\" ersetzt. Dies kann nicht rückgängig gemacht werden.",
+    "confirmPrompt": "Gib {keyword} ein, um zu bestätigen.",
+    "deleting": "Wird gelöscht...",
+    "couldNotDelete": "Konto konnte nicht gelöscht werden"
+  }
+}

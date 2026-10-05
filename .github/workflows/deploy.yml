@@ -1,0 +1,134 @@
+name: Deploy
+
+# Build the API and web images, push them to GHCR, then pull + restart the
+# stack on the production host over SSH.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys run at once; let an in-flight deploy finish.
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  # Never ship a commit that doesn't pass the full CI suite.
+  checks:
+    uses: ./.github/workflows/ci.yml
+
+  build-and-push:
+    needs: checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      api: ${{ steps.img.outputs.api }}
+      web: ${{ steps.img.outputs.web }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute lowercase image names
+        id: img
+        run: |
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          echo "api=ghcr.io/$owner/svey-api" >> "$GITHUB_OUTPUT"
+          echo "web=ghcr.io/$owner/svey-web" >> "$GITHUB_OUTPUT"
+
+      # The Impressum is legally required; refuse to ship a build that would
+      # render placeholder contact details. Stored as secrets so the values
+      # are masked in the (public) workflow logs.
+      - name: Require legal contact details
+        env:
+          VITE_LEGAL_NAME: ${{ secrets.VITE_LEGAL_NAME }}
+          VITE_LEGAL_STREET: ${{ secrets.VITE_LEGAL_STREET }}
+          VITE_LEGAL_CITY: ${{ secrets.VITE_LEGAL_CITY }}
+          VITE_LEGAL_EMAIL: ${{ secrets.VITE_LEGAL_EMAIL }}
+          VITE_LEGAL_PHONE: ${{ secrets.VITE_LEGAL_PHONE }}
+        run: |
+          for v in VITE_LEGAL_NAME VITE_LEGAL_STREET VITE_LEGAL_CITY VITE_LEGAL_EMAIL VITE_LEGAL_PHONE; do
+            [ -n "${!v}" ] || { echo "::error::Repository secret $v is not set"; exit 1; }
+          done
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.img.outputs.api }}:latest
+            ${{ steps.img.outputs.api }}:${{ github.sha }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+      - name: Build & push web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/frontend/Dockerfile
+          push: true
+          # Public site origin baked into the SPA at build time. Set the
+          # SITE_URL repository variable (e.g. https://svey.app).
+          build-args: |
+            VITE_API_URL=${{ vars.SITE_URL }}
+            VITE_LEGAL_NAME=${{ secrets.VITE_LEGAL_NAME }}
+            VITE_LEGAL_STREET=${{ secrets.VITE_LEGAL_STREET }}
+            VITE_LEGAL_CITY=${{ secrets.VITE_LEGAL_CITY }}
+            VITE_LEGAL_EMAIL=${{ secrets.VITE_LEGAL_EMAIL }}
+            VITE_LEGAL_PHONE=${{ secrets.VITE_LEGAL_PHONE }}
+          tags: |
+            ${{ steps.img.outputs.web }}:latest
+            ${{ steps.img.outputs.web }}:${{ github.sha }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ship the latest compose file + Caddyfile to the box (the host only
+      # needs Docker + a pre-created .env.prod; no source checkout required).
+      - name: Copy compose + Caddyfile to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          source: "docker-compose.prod.yml,Caddyfile,scripts"
+          target: /opt/svey
+
+      - name: Pull images & restart stack
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          GHCR_USER: ${{ github.repository_owner }}
+          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          envs: IMAGE_TAG,GHCR_USER,GHCR_PAT
+          script: |
+            set -euo pipefail
+            cd /opt/svey
+            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            export IMAGE_TAG
+            docker compose --env-file .env.prod -f docker-compose.prod.yml pull
+            docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
+            docker logout ghcr.io
+            docker image prune -f

@@ -1,0 +1,9 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Svey">
+  
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="#8B5CF6"></rect>
+  
+  <path d="M79 30 H50 a14 14 0 0 0 0 28 h28 a14 14 0 0 1 0 28 H49" stroke="#F5F4FB" stroke-width="14" stroke-linecap="butt" fill="none"></path>
+  
+  <rect x="79" y="23" width="14" height="14" rx="3" fill="#F4B942"></rect>
+  <rect x="35" y="79" width="14" height="14" rx="3" fill="#14B8A6"></rect>
+</svg>

@@ -1,0 +1,53 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.prod
+.backup.env
+
+# Database backups
+backups/
+
+# Internal documents that must not be published (e.g. GDPR Art. 30 record)
+docs/private/
+
+# Testing
+coverage
+
+# Turbo
+.turbo
+
+# Vercel
+.vercel
+
+# Build Outputs
+.next/
+out/
+build
+dist
+
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Secrets / keys (e.g. age backup key — must never be committed)
+*.key
+svey-backup.key
+
+# Misc
+.DS_Store
+*.pem
+
+# Personal Claude Code settings (project rules in .claude/CLAUDE.md are shared)
+.claude/settings.local.json

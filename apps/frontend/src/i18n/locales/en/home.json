@@ -1,0 +1,61 @@
+{
+  "greeting": {
+    "morning": "Morning",
+    "afternoon": "Afternoon",
+    "evening": "Evening"
+  },
+  "defaultName": "Player",
+  "unknownPlayer": "Unknown",
+  "notificationsLabel": "Notifications",
+  "empty": "No playgroups yet. Create or join one to get started.",
+  "recentGames": "Recent games",
+  "viewAll": "View all",
+  "lastPlayed": "Last {when}",
+  "hero": {
+    "activePlaygroup": "Active playgroup",
+    "online": "{n} online",
+    "startGame": "Start a game"
+  },
+  "streak": {
+    "label": "{n}-game win streak",
+    "quip": "The table has noticed."
+  },
+  "season": {
+    "title": "This season · in {name}",
+    "wins": "Wins",
+    "winShare": "Win share",
+    "threat": "Threat"
+  },
+  "gameRow": {
+    "you": "You",
+    "wonWith": "won with",
+    "youWonWith": "won with"
+  },
+  "otherPods": "Your other pods",
+  "switcher": {
+    "title": "Switch playgroup",
+    "players": "{n} player | {n} players",
+    "games": "{n} game | {n} games",
+    "create": "New playgroup or join with code"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "All quiet. No notifications yet.",
+    "types": {
+      "member_joined": {
+        "title": "{name} joined {playgroup}"
+      },
+      "member_approved": {
+        "title": "You're in — welcome to {playgroup}"
+      },
+      "role_changed": {
+        "admin": "You're now an admin of {playgroup}",
+        "member": "Your role in {playgroup} changed to member"
+      },
+      "deck_archidekt_deleted": {
+        "title": "{deck} was deleted on Archidekt",
+        "body": "It's still here, but won't sync anymore."
+      }
+    }
+  }
+}

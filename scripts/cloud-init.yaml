@@ -1,0 +1,91 @@
+#cloud-config
+# Svey production host bootstrap for Hetzner Cloud (Ubuntu 24.04).
+#
+# Paste into the "Cloud config" field when creating the server (well under the
+# 32 KiB limit). Before use, replace REPLACE_WITH_YOUR_DEPLOY_PUBLIC_KEY with
+# the PUBLIC key whose PRIVATE half you store as the GitHub `SSH_KEY` secret.
+#
+# This prepares the host only. It deliberately does NOT contain secrets or run
+# the first deploy — that comes from GitHub Actions once you've created
+# /opt/svey/.env.prod and set the repo secrets/variables.
+
+hostname: svey
+timezone: Europe/Berlin
+
+# CI connects as this user (set SSH_USER=deploy in your GitHub secrets).
+# `docker` group is added in runcmd, after Docker is installed.
+users:
+  - name: deploy
+    groups: [sudo]
+    shell: /bin/bash
+    lock_passwd: true
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    ssh_authorized_keys:
+      - REPLACE_WITH_YOUR_DEPLOY_PUBLIC_KEY
+
+# Key-only SSH; root login stays disabled (cloud-init default).
+ssh_pwauth: false
+
+package_update: true
+package_upgrade: true
+packages:
+  - ca-certificates
+  - curl
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - age      # encrypts nightly backups (scripts/backup-db.sh)
+  - rsync    # ships backups off-site to the Hetzner Storage Box
+
+write_files:
+  # Automatic security updates
+  - path: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+  # Extra SSH hardening
+  - path: /etc/ssh/sshd_config.d/99-hardening.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+  # Log retention: journald purges entries older than 14 days (bounds how long
+  # IP-bearing logs can exist). Docker services log via the journald driver.
+  - path: /etc/systemd/journald.conf.d/99-retention.conf
+    content: |
+      [Journal]
+      Storage=persistent
+      MaxRetentionSec=14d
+      SystemMaxUse=500M
+  # Nightly encrypted backup (DB + uploads) at 03:17 Europe/Berlin. Needs
+  # /opt/svey/.backup.env (AGE_RECIPIENT + Storage Box target) and the
+  # scripts/ directory, both provisioned after the first deploy.
+  - path: /etc/cron.d/svey-backup
+    content: |
+      17 3 * * * deploy /bin/bash /opt/svey/scripts/backup-db.sh >> /opt/svey/backup.log 2>&1
+
+runcmd:
+  # Docker Engine + compose plugin (official install script)
+  - curl -fsSL https://get.docker.com | sh
+  - systemctl enable --now docker
+  - usermod -aG docker deploy
+  # Host firewall (defence in depth alongside the Hetzner Cloud Firewall)
+  - ufw default deny incoming
+  - ufw default allow outgoing
+  - ufw allow 22/tcp
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  # App directory the CI pipeline deploys into
+  - mkdir -p /opt/svey
+  - chown deploy:deploy /opt/svey
+  # 2 GB swap as a safety net (builds run in CI, but pulls/Postgres can spike)
+  - fallocate -l 2G /swapfile
+  - chmod 600 /swapfile
+  - mkswap /swapfile
+  - swapon /swapfile
+  - echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  # Apply SSH hardening
+  - systemctl restart ssh
+  # Apply journald log-retention settings
+  - systemctl restart systemd-journald
