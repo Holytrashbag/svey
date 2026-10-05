@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ── Builder: install deps, compile TypeScript, produce a prod-only bundle ──
-FROM node:22-alpine AS builder
-RUN corepack enable
+FROM node:26-alpine AS builder
+# Node 25+ no longer bundles corepack; it pins pnpm from package.json's
+# packageManager field.
+RUN npm install -g corepack@0.36.0 && corepack enable
 WORKDIR /repo
 
 # Copy the whole monorepo. The root .dockerignore keeps node_modules, dist,
@@ -20,7 +22,7 @@ RUN pnpm install --frozen-lockfile \
 RUN cp -r /app/db/migrations /app/dist/db/migrations
 
 # ── Runtime: minimal image running as the non-root node user ──
-FROM node:22-alpine AS runtime
+FROM node:26-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
 

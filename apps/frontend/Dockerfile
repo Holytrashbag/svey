@@ -1,8 +1,10 @@
 # syntax=docker/dockerfile:1
 
 # ── Builder: build the Vue SPA ──
-FROM node:22-alpine AS builder
-RUN corepack enable
+FROM node:26-alpine AS builder
+# Node 25+ no longer bundles corepack; it pins pnpm from package.json's
+# packageManager field.
+RUN npm install -g corepack@0.36.0 && corepack enable
 WORKDIR /repo
 
 COPY . .
