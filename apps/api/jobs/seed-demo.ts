@@ -168,7 +168,10 @@ async function createVerifiedUser(name: string, email: string): Promise<string> 
   // marks the email verified up front, so no verification mail is ever sent.
   const ctx = await auth.$context
   const hash = await ctx.password.hash(DEMO_PASSWORD)
-  const user = await ctx.internalAdapter.createUser({ name, email, emailVerified: true })
+  const user = await ctx.internalAdapter.createUser(
+    { name, email, emailVerified: true },
+    { method: 'email-password' },
+  )
   await ctx.internalAdapter.linkAccount({
     userId: user.id,
     providerId: 'credential',
