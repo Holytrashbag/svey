@@ -9,6 +9,7 @@
 One phone in the middle of the table runs the game. Life, poison and commander damage are tracked live, eliminations are detected automatically, and every player rates the game afterwards. Each game feeds standings and deck stats that the whole pod can see.
 
 [![CI](https://github.com/Holytrashbag/svey/actions/workflows/ci.yml/badge.svg)](https://github.com/Holytrashbag/svey/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Holytrashbag/svey?color=14B8A6)](https://github.com/Holytrashbag/svey/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-8B5CF6.svg)](LICENSE)
 ![Vue 3](https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white)
 ![Fastify](https://img.shields.io/badge/Fastify-5-000?logo=fastify)
@@ -165,6 +166,14 @@ pnpm test
 - **API:** token encryption, bracket estimation, error handling, and HTTP smoke tests that boot the full app.
 
 Neither suite needs a database. The API tests read a committed, non-secret [`apps/api/.env.test`](apps/api/.env.test). CI runs lint, type-checks, tests and a production build on every push and pull request.
+
+## Development workflow
+
+The repo uses **GitHub flow**. Every change is a short-lived branch and a pull request, and `main` is protected. A PR merges only when CI passes and its title is a [Conventional Commit](https://www.conventionalcommits.org/); it is then squash-merged.
+
+Each merge to `main` deploys. [release-please](https://github.com/googleapis/release-please) turns the merged titles into [`CHANGELOG.md`](CHANGELOG.md) and versioned [releases](https://github.com/Holytrashbag/svey/releases).
+
+Details are in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Deployment
 
