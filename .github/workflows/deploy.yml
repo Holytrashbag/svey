@@ -27,7 +27,7 @@ jobs:
       api: ${{ steps.img.outputs.api }}
       web: ${{ steps.img.outputs.web }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Compute lowercase image names
         id: img
@@ -51,17 +51,17 @@ jobs:
             [ -n "${!v}" ] || { echo "::error::Repository secret $v is not set"; exit 1; }
           done
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & push API image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/api/Dockerfile
@@ -73,7 +73,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=api
 
       - name: Build & push web image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: apps/frontend/Dockerfile
@@ -96,13 +96,18 @@ jobs:
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
+    # packages:read lets the server pull the images with this job's own
+    # short-lived GITHUB_TOKEN — no long-lived registry token to rotate.
+    permissions:
+      contents: read
+      packages: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Ship the latest compose file + Caddyfile to the box (the host only
       # needs Docker + a pre-created .env.prod; no source checkout required).
       - name: Copy compose + Caddyfile to server
-        uses: appleboy/scp-action@v0.1.7
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -112,23 +117,24 @@ jobs:
           target: /opt/svey
 
       - name: Pull images & restart stack
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.5
         env:
           IMAGE_TAG: ${{ github.sha }}
-          GHCR_USER: ${{ github.repository_owner }}
-          GHCR_PAT: ${{ secrets.GHCR_PAT }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
-          envs: IMAGE_TAG,GHCR_USER,GHCR_PAT
+          envs: IMAGE_TAG,GHCR_USER,GHCR_TOKEN
           script: |
             set -euo pipefail
             cd /opt/svey
-            echo "$GHCR_PAT" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            # The token expires with this job; log out even if a step fails.
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            trap 'docker logout ghcr.io >/dev/null' EXIT
             export IMAGE_TAG
             docker compose --env-file .env.prod -f docker-compose.prod.yml pull
             docker compose --env-file .env.prod -f docker-compose.prod.yml up -d
-            docker logout ghcr.io
             docker image prune -f

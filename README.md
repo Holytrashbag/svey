@@ -185,11 +185,10 @@ Production is one VM running [`docker-compose.prod.yml`](docker-compose.prod.yml
 | Name | Kind | Purpose |
 |---|---|---|
 | `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `SSH_PORT` | secret | SSH target for the deploy step |
-| `GHCR_PAT` | secret | lets the host pull the private images |
 | `VITE_LEGAL_NAME`, `VITE_LEGAL_STREET`, `VITE_LEGAL_CITY`, `VITE_LEGAL_EMAIL`, `VITE_LEGAL_PHONE` | secret | Impressum and privacy-page contact details baked into the SPA. The deploy fails if any are missing. |
 | `SITE_URL` | variable | public origin, e.g. `https://svey.app` |
 
-Server-side configuration lives in `/opt/svey/.env.prod` on the host (see [`.env.prod.example`](.env.prod.example)).
+The host pulls the private images with the deploy job's own short-lived `GITHUB_TOKEN`, so there is no registry token to rotate. Server-side configuration lives in `/opt/svey/.env.prod` on the host (see [`.env.prod.example`](.env.prod.example)).
 
 </details>
 

@@ -1,0 +1,39 @@
+# Weekly, grouped dependency updates. Titles follow the repo's Conventional
+# Commit rule: runtime deps as fix(deps) (they ship and trigger a patch
+# release), dev deps as chore(deps-dev), workflow actions as ci(deps).
+# A 7-day cooldown skips brand-new releases (supply-chain safety margin).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /apps/api
+      - /apps/frontend
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: fix
+      prefix-development: chore
+      include: scope
+    groups:
+      # Minor/patch bumps land together; majors get their own PR to review.
+      minor-and-patch:
+        update-types: [minor, patch]
