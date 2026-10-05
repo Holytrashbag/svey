@@ -176,9 +176,9 @@ const currentCopy = computed((): CopyVariant => COPY.value[props.copy] ?? (COPY.
         <div v-if="layout === 'stats'" class="grid grid-cols-3 gap-2">
           <div
             v-for="stat in [
-              { v: '12',  l: t('auth.teaser.wins'),    c: 'text-crown' },
+              { v: '12',  s: '',  l: t('auth.teaser.wins'),    c: 'text-crown' },
               { v: '63',  s: '%', l: t('auth.teaser.winrate'), c: 'text-fg-0' },
-              { v: '8.2', l: t('auth.teaser.threat'),  c: 'text-arcane-2' },
+              { v: '8.2', s: '',  l: t('auth.teaser.threat'),  c: 'text-arcane-2' },
             ]"
             :key="stat.l"
             class="rounded-lg px-3 py-2.5 border border-white/[8%] backdrop-blur-xl backdrop-saturate-140 bg-bg-1/70"
