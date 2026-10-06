@@ -9,8 +9,16 @@ import PlaygroupDetailView from './PlaygroupDetailView.vue'
 import PlaygroupStandingRow from '@/components/playgroups/PlaygroupStandingRow.vue'
 import PlaygroupMemberCard from '@/components/playgroups/PlaygroupMemberCard.vue'
 
+type Api = typeof api
+
 vi.mock('@/lib/api', () => ({
-  api: { get: vi.fn(), post: vi.fn(), patch: vi.fn(), delete: vi.fn(), upload: vi.fn() },
+  api: {
+    get:    vi.fn<Api['get']>(),
+    post:   vi.fn<Api['post']>(),
+    patch:  vi.fn<Api['patch']>(),
+    delete: vi.fn<Api['delete']>(),
+    upload: vi.fn<Api['upload']>(),
+  },
   apiUrl: (p: string) => p,
 }))
 
