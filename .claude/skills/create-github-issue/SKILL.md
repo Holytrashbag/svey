@@ -1,104 +1,107 @@
 ---
 name: create-github-issue
-description: Create, label, and close GitHub issues using the gh CLI. Use when asked to create an issue, file a bug report, open a feature request, or track work in GitHub Issues.
+description: Create, label, edit and close GitHub issues for Holytrashbag/svey with the gh CLI, using the backlog's title, label and body conventions. Use when asked to file/open/create an issue, bug report, feature request or backlog ticket, or to relabel or close one. Not for pull requests (use ship-pr).
 ---
 
-Create GitHub issues for the `Holytrashbag/svey` repo using the `gh` CLI, which is pre-installed and authenticated (`gh auth status` confirms it). No build step needed — `gh` is the driver.
+File issues on `Holytrashbag/svey` with `gh`. Every issue follows the backlog conventions below so it can be picked up later with `/plan-ticket <number>`.
 
-## Prerequisites
-
-`gh` must be installed and authenticated:
+## 1. Check for duplicates
 
 ```bash
-gh --version    # gh version 2.93.0
-gh auth status  # confirms logged in to github.com
+gh issue list --repo Holytrashbag/svey --search "<keywords>" --state all --limit 20
 ```
 
-## Create an issue
+If an open issue already covers it, comment on that one instead (`gh issue comment <n> --body-file -`).
 
-Minimal — title only (body defaults to empty):
+## 2. Title
+
+A Conventional Commit, lower-case subject, imperative, describing the outcome. The same title becomes the PR title later:
+
+- `fix(tracker): show the game timer only once`
+- `feat(games): show survey and retire notes on the game recap`
+- `docs: rewrite README around app features`
+
+Types: `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, `chore`. Scope is the area touched (`tracker`, `games`, `game-setup`, `pods`, `decks`, `home`, `stats`, `auth`, `i18n`, `api`, `deps`, …).
+
+## 3. Labels
+
+Every issue gets **one type label + one `area:` label + one `priority:` label** (plus `accessibility` when it's a barrier for disabled users):
+
+| Kind | Labels |
+|---|---|
+| Type | `bug`, `enhancement`, `documentation` |
+| Area | `area: tracker` (live tracker), `area: games` (setup, survey, recap), `area: stats` (win rates, standings), `area: docs` (README, docs, Claude tooling) |
+| Priority | `priority: high`, `priority: medium`, `priority: low` |
+| Extra | `accessibility`, `good first issue`, `help wanted`, `question` |
+
+`dependencies`, `javascript` and `autorelease: pending` are set by Dependabot and release-please — don't use them by hand. Labels change; check the live list when unsure:
 
 ```bash
-gh issue create --title "fix: broken deck sync after Archidekt API change"
+gh label list --repo Holytrashbag/svey
 ```
 
-With body:
+If no `area:` label fits, ask the user whether to create one (`gh label create "area: decks" --color 0d9488 --description "…"`) rather than leaving it off.
 
-```bash
-gh issue create \
-  --title "feat: add poison counter display to game tracker" \
-  --body "The game tracker doesn't show poison counters. Should display alongside life total."
-```
+## 4. Body
 
-With label (multiple `--label` flags or comma-separated):
+Use this structure (drop a section only if it would be empty):
 
-```bash
-gh issue create \
-  --title "bug: commander damage not resetting on game end" \
-  --body "Steps to reproduce: ..." \
-  --label "bug"
-
-gh issue create \
-  --title "feat: dark mode toggle" \
-  --label "enhancement,help wanted"
-```
-
-Multi-line body via stdin (useful for agents composing structured content):
-
-```bash
-gh issue create \
-  --title "feat: bracket estimator improvements" \
-  --body-file - << 'EOF'
+```markdown
 ## Problem
-The bracket estimator doesn't account for stax pieces.
+What's wrong or missing, from the user's point of view. Concrete: which screen, what you see, why it matters.
 
-## Proposed solution
-Add a weight multiplier for known stax cards in the estimator logic.
+## Scope
+- Each bullet is one change the fix must make.
+- Name the rule, not the implementation, unless the implementation is the point.
 
-## Affected files
-- apps/api/lib/bracket-estimator.ts
+## Out of scope
+- Related things this issue deliberately does not do.
+
+## Open question
+- Anything undecided. Give a proposed answer: "Proposed: yes, for consistency."
+
+## Definition of done
+- [ ] Observable, checkable outcomes (e.g. "Member with 3 wins in 4 games shows 75%")
+- [ ] Tests that must exist for branching logic
+- [ ] CI passes
+
+## Pointers
+- `apps/api/services/playgroup.service.ts` (what to look at there)
+- `apps/frontend/src/views/PlaygroupDetailView.vue`
+```
+
+Look up the code before writing **Pointers** — real paths and symbols, not guesses.
+
+## 5. Create it
+
+Always pass the body via heredoc (no shell-quoting problems) and `--repo` explicitly:
+
+```bash
+gh issue create --repo Holytrashbag/svey \
+  --title "fix(tracker): show the game timer only once" \
+  --label "bug" --label "area: tracker" --label "priority: medium" \
+  --body-file - <<'EOF'
+## Problem
+…
 EOF
 ```
 
-Assign to yourself:
+`gh issue create` prints the new issue URL; report it to the user.
+
+## Other operations
 
 ```bash
-gh issue create --title "chore: update dependencies" --assignee "@me"
+gh issue view 39 --repo Holytrashbag/svey --comments
+gh issue edit 39 --repo Holytrashbag/svey --add-label "priority: high" --remove-label "priority: medium"
+gh issue edit 39 --repo Holytrashbag/svey --body-file - <<'EOF' … EOF
+gh issue close 39 --repo Holytrashbag/svey --reason completed   # completed | "not planned" | duplicate
+gh issue close 39 --repo Holytrashbag/svey --reason "not planned" --comment "Superseded by #41"
 ```
 
-## Available labels
-
-```
-bug             enhancement      documentation
-good first issue  help wanted    duplicate
-invalid         question         wontfix
-```
-
-List current labels at any time:
-
-```bash
-gh label list
-```
-
-## View and close issues
-
-```bash
-gh issue view 1                        # view issue #1
-gh issue list --limit 10               # list open issues
-gh issue close 1 --reason "completed"  # close with reason: completed | not_planned | duplicate
-```
+Issues are closed automatically when a PR whose body says `Closes #N` is merged, so don't close them by hand after shipping.
 
 ## Gotchas
 
-- `--repo` flag overrides the detected repo: `gh issue create --repo owner/other-repo --title "..."`. Without it, `gh` uses the current git remote, which is `Holytrashbag/svey`.
-- Body text with double quotes must be escaped or use `--body-file -` with a heredoc (shown above) to avoid shell quoting issues.
-- The `project` scope is NOT in the current token — `--project` flag will fail with a 401. To fix: `gh auth refresh -s project`.
-- `gh issue create` returns the new issue URL on stdout (e.g. `https://github.com/Holytrashbag/svey/issues/2`) — capture it with `$(gh issue create ...)` if you need the issue number.
-
-## Troubleshooting
-
-**`gh: command not found`** — install via the GitHub CLI apt repo or download the binary from https://cli.github.com. On this machine it's at `/usr/bin/gh`.
-
-**`GraphQL: Resource not accessible by integration`** — the token is missing a scope. Run `gh auth refresh -s <scope>` where `<scope>` is the one mentioned in the error (e.g. `project`).
-
-**`Could not resolve to a Repository`** — you're not inside a git repo, or the remote isn't set. Pass `--repo Holytrashbag/svey` explicitly.
+- Issues are public (the repo is public). Never put personal data, secrets, server IPs or anything from `docs/private/` in a title, body or comment.
+- `--project` needs the `project` token scope (`gh auth refresh -s project`); the backlog doesn't use Projects, so leave it off.
+- `Could not resolve to a Repository` → you forgot `--repo Holytrashbag/svey` outside the repo.

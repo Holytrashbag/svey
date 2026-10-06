@@ -4,7 +4,7 @@
 
 **Svey** is a social/community app for Magic: The Gathering Commander playgroups: live game tracking on one shared phone, post-game surveys, deck management (Archidekt import) and stats. The aesthetic is a modern sports-stats app (jewel tones, near-black, rounded corners), **not** fantasy-kitsch. Voice: playful but functional, witty microcopy, zero fantasy clichés.
 
-Monorepo managed with **Turborepo + pnpm**. Two workspaces, no shared packages:
+Monorepo managed with **Turborepo + pnpm** on **Node 26** (`.nvmrc`). Two workspaces, no shared packages:
 
 - `apps/frontend` — Vue 3 + Vite SPA (PWA)
 - `apps/api` — Fastify + TypeScript (files at the package root, no `src/`)
@@ -20,8 +20,25 @@ Types are defined where they're used (routes/services on the API, `src/types/api
 - Open the PR with `gh pr create`; the **PR title must be a Conventional Commit** (`feat(tracker): …`, lower-case subject) — it becomes the commit on `main` and feeds the changelog. Fill in `.github/pull_request_template.md`
 - Required checks: **CI** (`pnpm lint:check && pnpm check-types && pnpm test && pnpm build`) and **Conventional PR title**. Run CI locally before pushing
 - Merge with `gh pr merge --squash` only when the user asks — **merging deploys to production** (migrations included)
-- Don't merge the release-please PR (`chore(main): release x.y.z`) unless asked; it cuts a version
+- Don't merge the release-please PR (`chore(main): release x.y.z`) unless asked; it cuts a version. Its checks never report, so it's the **only** PR merged with `--admin`
+- Issues use a Conventional title plus one type, one `area: *` and one `priority: *` label; bodies follow Problem / Scope / Out of scope / Open question / Definition of done / Pointers
 - Details: [CONTRIBUTING.md](../CONTRIBUTING.md)
+
+---
+
+## Project skills (`.claude/skills/`)
+
+Use these instead of improvising the workflow:
+
+| Skill | When |
+|---|---|
+| `plan-ticket` | Implementing or planning a GitHub issue: fetch it, read the code, plan, wait for approval |
+| `create-github-issue` | Filing, labelling or closing issues |
+| `add-migration` | Any change to tables, columns, indexes or enums |
+| `ship-pr` | Branch → local CI → push → `gh pr create` (never merges) |
+| `release` | Reviewing or merging the release-please PR |
+
+When a workflow or convention changes, update the matching skill in the same PR.
 
 ---
 
@@ -33,6 +50,7 @@ Run from the **repo root**:
 - `pnpm lint:check` · `pnpm check-types` · `pnpm test` · `pnpm build` — exactly what CI runs
 - `pnpm db:up` / `db:down` / `db:reset` — local Postgres in Docker
 - `pnpm db:migrate` — apply SQL migrations
+- `pnpm --filter api db:generate` — draft migration SQL into the gitignored `db/drizzle/` (see the `add-migration` skill: generate a baseline before editing `schema.ts`, otherwise you get the whole schema)
 - `pnpm --filter api seed` — demo data (sign in as `demo@example.com` / `svey-demo`)
 
 Per-package scripts are fine for one-off tasks: `pnpm --filter api test`, `pnpm --filter frontend lint`.
@@ -123,7 +141,7 @@ export const Errors = {
 - **Relational query API (`.query.*`) for reads that need relations; SQL-like builder for writes, upserts and aggregations**
 - Always use `db.transaction()` for multi-step writes
 - No raw SQL strings unless there is no Drizzle alternative
-- Schema changes: add the next numbered file in `db/migrations/` (`pnpm --filter api db:generate` drafts SQL into `db/drizzle/` to copy from). Never edit an applied migration; never mutate the DB manually
+- Schema changes: add the next numbered file in `db/migrations/` (`NNN_snake_case.sql`, follow the `add-migration` skill). Migrations run on container start, so they go live with the merge: keep them additive and forward-only. Never edit an applied migration; never `db:push` or mutate the DB manually
 
 ### Auth (Better Auth)
 
@@ -155,7 +173,7 @@ apps/frontend/src/
 │   ├── auth/ decks/ home/ legal/ playgroups/
 │   ├── game-setup/    # Gs*
 │   └── game-tracker/  # Gt*
-├── composables/       # useFormat (locale-aware dates/relative time), useNav, usePlaygroupStats, …
+├── composables/       # useFormat (locale-aware dates/relative time), useNav, usePlaygroupStats, useClickOutside
 ├── i18n/              # vue-i18n setup, formats, locales/{en,de}/*.json
 ├── lib/               # api.ts (fetch wrapper), auth-client.ts, game-tracker.ts, game-setup.ts,
 │                      # time.ts, mtg.ts, legal-contact.ts — framework-free, unit-testable
