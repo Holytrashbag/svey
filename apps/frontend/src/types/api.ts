@@ -147,12 +147,16 @@ export type PlaygroupMemberDetail = {
   online:    boolean
   role:      'admin' | 'member'
   mainDeck:  string | null
+  /** Wins in finished games in this pod */
   wins:      number
+  /** Finished games (won or draw) played in this pod; retired games excluded */
+  gamesPlayed: number
+  /** Integer %, wins / gamesPlayed; null when the member hasn't played */
+  winRate:   number | null
   threat:    number
   you:       boolean
   avatarUrl: string | null
   joinedAt:  string
-  games:     number
   isOwner:   boolean
 }
 

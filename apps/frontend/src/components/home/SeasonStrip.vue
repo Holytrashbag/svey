@@ -3,7 +3,7 @@ import { useI18n } from "vue-i18n";
 
 defineProps<{
   wins: number;
-  winrate: number;
+  winrate: number | null;
   threat: number;
   playgroupName: string;
 }>();
@@ -31,7 +31,8 @@ const { t } = useI18n();
         <div
           class="font-display font-bold text-fg-0 tabular-nums text-[30px] tracking-[-0.03em] leading-none"
         >
-          {{ winrate }}<span class="text-[16px] text-fg-3 ml-0.5 font-medium">%</span>
+          <template v-if="winrate === null">—</template>
+          <template v-else>{{ winrate }}<span class="text-[16px] text-fg-3 ml-0.5 font-medium">%</span></template>
         </div>
         <div class="text-[10px] text-fg-3 uppercase tracking-eyebrow font-semibold mt-2">
           {{ t("home.season.winShare") }}

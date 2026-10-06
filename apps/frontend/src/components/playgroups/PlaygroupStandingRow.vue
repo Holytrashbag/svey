@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import SbAvatar from '@/components/ui/SbAvatar.vue'
 import SbIcon from '@/components/ui/SbIcon.vue'
+import { formatWinRate } from '@/lib/pod-standings'
 
 const { t } = useI18n()
 
@@ -9,7 +10,7 @@ const props = defineProps<{
   rank: number
   name: string
   wins: number
-  winrate: number
+  winrate: number | null
   barWidth: number
   you?: boolean
   avatarUrl?: string | null
@@ -63,7 +64,7 @@ const isTop = props.rank === 1
       >
         {{ wins }}<span class="text-[10px] text-fg-3 font-medium ml-0.5">W</span>
       </div>
-      <div class="font-mono text-[10.5px] text-fg-3 mt-0.5">{{ winrate }}%</div>
+      <div class="font-mono text-[10.5px] text-fg-3 mt-0.5">{{ formatWinRate(winrate) }}</div>
     </div>
   </div>
 </template>

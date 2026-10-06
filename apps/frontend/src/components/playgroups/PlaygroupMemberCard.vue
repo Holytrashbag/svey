@@ -2,6 +2,7 @@
 import { useI18n } from 'vue-i18n'
 import SbAvatar from '@/components/ui/SbAvatar.vue'
 import SbIcon from '@/components/ui/SbIcon.vue'
+import { formatWinRate } from '@/lib/pod-standings'
 
 const { t } = useI18n()
 
@@ -11,7 +12,7 @@ defineProps<{
   role: 'admin' | 'member'
   mainDeck: string
   wins: number
-  winrate: number
+  winrate: number | null
   threat: number
   you?: boolean
   canRemove?: boolean
@@ -55,7 +56,7 @@ defineEmits<{
       <div class="font-display font-bold text-fg-0 text-display-sm tracking-headline tabular-nums">
         {{ wins }}<span class="text-meta text-fg-3 font-medium ml-0.5">W</span>
       </div>
-      <div class="font-mono text-meta text-fg-3 mt-0.5">{{ winrate }}%</div>
+      <div class="font-mono text-meta text-fg-3 mt-0.5">{{ formatWinRate(winrate) }}</div>
     </div>
 
     <!-- Remove button (admin only, non-self) -->

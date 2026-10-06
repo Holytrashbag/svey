@@ -499,7 +499,7 @@ const { onNav } = useNav()
                 class="font-bold text-[9.5px] text-arcane-2 tracking-wide uppercase py-0.5 px-1.5 bg-arcane/12 rounded-md leading-snug"
               >{{ t('playgroups.manage.admin') }}</span>
             </div>
-            <div class="truncate text-caption text-fg-3 mt-0.5">{{ t('playgroups.manage.joinedLine', { date: formatFounded(sheetMember.joinedAt), games: t('playgroups.gamesCount', sheetMember.games) }) }}</div>
+            <div class="truncate text-caption text-fg-3 mt-0.5">{{ t('playgroups.manage.joinedLine', { date: formatFounded(sheetMember.joinedAt), games: t('playgroups.gamesCount', sheetMember.gamesPlayed) }) }}</div>
           </div>
         </div>
 
