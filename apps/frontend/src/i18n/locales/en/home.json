@@ -23,7 +23,7 @@
   "season": {
     "title": "This season · in {name}",
     "wins": "Wins",
-    "winShare": "Win share",
+    "winShare": "Win rate",
     "threat": "Threat"
   },
   "gameRow": {

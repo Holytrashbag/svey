@@ -1,9 +1,10 @@
 import { randomBytes } from 'node:crypto'
 import { pgTable, uuid, text as pgText } from 'drizzle-orm/pg-core'
-import { eq, and, inArray, count, sql, desc } from 'drizzle-orm'
+import { eq, and, inArray, count, sql, desc, gte, gt } from 'drizzle-orm'
 import type { Db } from '../lib/db.ts'
 import { playgroup, playgroupMember, game, gamePlayer, deck } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
+import { summarizePodGames, tallyMemberRecords, threatRating, winRate } from '../lib/pod-stats.ts'
 import * as notificationService from './notification.service.ts'
 
 // Read-only reference to Better Auth's user table (not managed by our migrations)
@@ -50,12 +51,17 @@ export type PlaygroupMemberDetail = {
   online:    boolean
   role:      'admin' | 'member'
   mainDeck:  string | null
+  /** Wins in finished games in this pod */
   wins:      number
+  /** Finished games (won or draw) this member played in this pod; retired games excluded */
+  gamesPlayed: number
+  /** Integer %, wins / gamesPlayed; null when the member hasn't played */
+  winRate:   number | null
+  /** 0–10, one decimal, wins / gamesPlayed */
   threat:    number
   you:       boolean
   avatarUrl: string | null
   joinedAt:  string
-  games:     number
   isOwner:   boolean
 }
 
@@ -86,6 +92,8 @@ export type PlaygroupDetail = {
 }
 
 // ── helpers ────────────────────────────────────────────────────────────────────
+
+const RECENT_GAMES_LIMIT = 8
 
 function generateInviteCode(): string {
   const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -415,7 +423,20 @@ export async function getPlaygroupDetail(
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [games, winCounts, deckUsage] = await Promise.all([
+  // Aggregates are grouped by endReason (and winner flag); lib/pod-stats decides which rows count.
+  const [podGameRows, recentGames, memberResultRows, deckUsage] = await Promise.all([
+    dbClient
+      .select({
+        endReason:    game.endReason,
+        games:        sql<number>`count(*)::int`,
+        thisMonth:    sql<number>`(count(*) filter (where ${gte(game.startedAt, monthStart)}))::int`,
+        timedGames:   sql<number>`(count(*) filter (where ${gt(game.durationSeconds, 0)}))::int`,
+        timedSeconds: sql<number>`coalesce(sum(${game.durationSeconds}) filter (where ${gt(game.durationSeconds, 0)}), 0)::float`,
+      })
+      .from(game)
+      .where(eq(game.playgroupId, playgroupId))
+      .groupBy(game.endReason),
+
     dbClient
       .select({
         id:              game.id,
@@ -425,20 +446,23 @@ export async function getPlaygroupDetail(
       .from(game)
       .where(eq(game.playgroupId, playgroupId))
       .orderBy(desc(game.startedAt))
-      .limit(50),
+      .limit(RECENT_GAMES_LIMIT),
 
     memberIds.length > 0
       ? dbClient
           .select({
             playgroupMemberId: gamePlayer.playgroupMemberId,
-            wins: count(gamePlayer.id),
+            endReason:         game.endReason,
+            isWinner:          gamePlayer.isWinner,
+            n:                 sql<number>`count(*)::int`,
           })
           .from(gamePlayer)
+          .innerJoin(game, eq(game.id, gamePlayer.gameId))
           .where(and(
             inArray(gamePlayer.playgroupMemberId, memberIds),
-            eq(gamePlayer.isWinner, true),
+            eq(game.playgroupId, playgroupId),
           ))
-          .groupBy(gamePlayer.playgroupMemberId)
+          .groupBy(gamePlayer.playgroupMemberId, game.endReason, gamePlayer.isWinner)
       : Promise.resolve([]),
 
     memberIds.length > 0
@@ -458,27 +482,16 @@ export async function getPlaygroupDetail(
       : Promise.resolve([]),
   ])
 
-  const totalGames = games.length
-  const thisMonth = games.filter(g => g.startedAt >= monthStart).length
-  const durationsWithValue = games.filter(g => g.durationSeconds && g.durationSeconds > 0)
-  const avgLength = durationsWithValue.length > 0
-    ? Math.round(durationsWithValue.reduce((s, g) => s + (g.durationSeconds ?? 0), 0) / durationsWithValue.length / 60)
-    : 0
-
-  const winsByMember: Record<string, number> = {}
-  for (const r of winCounts) {
-    if (r.playgroupMemberId) winsByMember[r.playgroupMemberId] = r.wins
-  }
+  const { totalGames, thisMonth, avgLength } = summarizePodGames(podGameRows)
+  const records = tallyMemberRecords(memberResultRows)
 
   // Find main deck per member (most-played deckId in this playgroup)
   const topDeckByMember: Record<string, string> = {}
   const deckByMember: Record<string, Record<string, number>> = {}
-  const gamesByMember: Record<string, number> = {}
   for (const r of deckUsage) {
     if (!r.playgroupMemberId) continue
     if (!deckByMember[r.playgroupMemberId]) deckByMember[r.playgroupMemberId] = {}
     deckByMember[r.playgroupMemberId]![r.deckId] = r.plays
-    gamesByMember[r.playgroupMemberId] = (gamesByMember[r.playgroupMemberId] ?? 0) + r.plays
   }
   for (const [memberId, deckPlays] of Object.entries(deckByMember)) {
     const top = Object.entries(deckPlays).sort((a, b) => b[1] - a[1])[0]
@@ -496,8 +509,7 @@ export async function getPlaygroupDetail(
   }
 
   const memberDetails: PlaygroupMemberDetail[] = members.map(m => {
-    const wins = winsByMember[m.id] ?? 0
-    const threat = totalGames > 0 ? Math.round((wins / totalGames) * 100) / 10 : 0
+    const { wins, gamesPlayed } = records.get(m.id) ?? { wins: 0, gamesPlayed: 0 }
     const topDeckId = topDeckByMember[m.id]
     return {
       id:        m.id,
@@ -506,17 +518,17 @@ export async function getPlaygroupDetail(
       role:      m.role,
       mainDeck:  topDeckId ? (deckNames[topDeckId] ?? null) : null,
       wins,
-      threat,
+      gamesPlayed,
+      winRate:   winRate(wins, gamesPlayed),
+      threat:    threatRating(wins, gamesPlayed),
       you:       m.userId === userId,
       avatarUrl: m.userId ? (detailAvatarByUserId[m.userId] ?? null) : null,
       joinedAt:  m.joinedAt.toISOString(),
-      games:     gamesByMember[m.id] ?? 0,
       isOwner:   m.userId === group.createdBy,
     }
   })
 
-  // Recent games: fetch game players for the most recent 8 games
-  const recentGames = games.slice(0, 8)
+  // Recent games: fetch game players for the most recent games
   const recentItems: RecentGameItem[] = []
 
   if (recentGames.length > 0) {
