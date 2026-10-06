@@ -32,7 +32,8 @@ Use these instead of improvising the workflow:
 
 | Skill | When |
 |---|---|
-| `plan-ticket` | Implementing or planning a GitHub issue: fetch it, read the code, plan, wait for approval |
+| `plan-ticket` | Planning a GitHub issue: fetch it, read the code, plan, wait for approval |
+| `implement-issue` | Implementing a GitHub issue autonomously: subagent plan + validation, tests first, up to 5 test/fix rounds, then a PR or a progress comment for human review |
 | `create-github-issue` | Filing, labelling or closing issues |
 | `add-migration` | Any change to tables, columns, indexes or enums |
 | `ship-pr` | Branch → local CI → push → `gh pr create` (never merges) |

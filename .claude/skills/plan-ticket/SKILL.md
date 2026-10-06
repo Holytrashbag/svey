@@ -1,6 +1,6 @@
 ---
 name: plan-ticket
-description: Fetch a Holytrashbag/svey GitHub issue by number or URL, read the code it points to, and produce a phased implementation plan for approval before writing code. Use when asked to plan, implement, pick up, work on or investigate an issue/ticket ("implement #39", "plan issue 33", a github.com/.../issues/N link).
+description: Fetch a Holytrashbag/svey GitHub issue by number or URL, read the code it points to, and produce a phased implementation plan for approval before writing code. Use when asked to plan, pick up or investigate an issue/ticket and review the plan before coding ("plan issue 33", "how would we do #39?", a github.com/.../issues/N link). To implement an issue autonomously (tests first, PR at the end), use implement-issue.
 argument-hint: <issue number or URL>
 ---
 
