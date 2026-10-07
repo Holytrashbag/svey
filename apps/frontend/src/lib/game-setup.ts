@@ -1,3 +1,5 @@
+import type { PodDeckItem } from '@/types/api'
+
 export type GsSeat = {
   playerId: string | null
   isGuest: boolean
@@ -25,4 +27,30 @@ export type GsDeck = {
   colors: string[]
   bracket: number
   archetype?: string
+}
+
+export type GsDeckGroup = {
+  owner: GsMember
+  decks: GsDeck[]
+}
+
+export type GsDeckChoices = {
+  own:      GsDeck[]
+  borrowed: GsDeckGroup[]
+}
+
+export function toGsDeck(_d: PodDeckItem): GsDeck {
+  throw new Error('not implemented')
+}
+
+export function deckChoicesForSeat(
+  _decks: readonly GsDeck[],
+  _members: readonly GsMember[],
+  _seat: GsSeat | null,
+): GsDeckChoices {
+  throw new Error('not implemented')
+}
+
+export function isBorrowedDeck(_seat: GsSeat, _deck: GsDeck | undefined): boolean {
+  throw new Error('not implemented')
 }

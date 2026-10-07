@@ -186,6 +186,16 @@ export type PlaygroupDetail = {
   recent:     RecentGameItem[]
 }
 
+/** A non-archived deck of an active pod member, as offered in game setup. */
+export type PodDeckItem = {
+  id:            string
+  ownerMemberId: string
+  name:          string
+  commander:     string | null
+  colorIdentity: string[]
+  bracket:       number
+}
+
 // ── Stats ─────────────────────────────────────────────────────────────────────
 
 export type PlayerStats = {
