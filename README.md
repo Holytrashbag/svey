@@ -49,10 +49,7 @@ pnpm install
 cp apps/api/.env.example apps/api/.env
 cp apps/frontend/.env.example apps/frontend/.env
 
-pnpm db:up                      # Postgres 17 in Docker
-pnpm db:migrate                 # apply SQL migrations
-pnpm --filter api seed          # optional: demo pod with 5 players, 10 decks, 14 games
-pnpm dev                        # API on :3000, app on http://localhost:5173
+pnpm dev                        # Postgres in Docker, migrations, demo seed, then API on :3000 + app on http://localhost:5173
 ```
 
 Sign in with **`demo@example.com`** / **`svey-demo`**.
@@ -66,7 +63,7 @@ Notes:
 
 | Command | What it does |
 |---|---|
-| `pnpm dev` | Run API (watch mode) and frontend (Vite) together |
+| `pnpm dev` | Start Postgres, apply migrations, seed demo data (first run only), then run API (watch mode) and frontend (Vite) together |
 | `pnpm build` | Type-check and build both apps |
 | `pnpm test` | API tests (`node:test`) and frontend tests (Vitest) |
 | `pnpm lint:check` / `pnpm lint` | oxlint + ESLint (`lint` auto-fixes) |

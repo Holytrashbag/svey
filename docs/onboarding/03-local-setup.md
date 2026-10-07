@@ -40,17 +40,29 @@ pnpm install
 cp apps/api/.env.example apps/api/.env
 cp apps/frontend/.env.example apps/frontend/.env
 
-pnpm db:up                      # Postgres 17 in Docker on :5432
-pnpm db:migrate                 # apply SQL migrations
-pnpm --filter api seed          # demo pod: 5 players, 10 decks, 14 games
-pnpm dev                        # API on :3000, app on http://localhost:5173
+pnpm dev                        # DB up → migrate → seed → API on :3000, app on http://localhost:5173
 ```
 
 Sign in at http://localhost:5173 with **`demo@example.com`** / **`svey-demo`**.
 
-### What `pnpm dev` starts
+### What `pnpm dev` does
 
-Turbo runs each app's `dev` script in parallel:
+The root script chains the database setup in front of the apps:
+
+```json
+"dev": "pnpm db:up && pnpm db:migrate && pnpm --filter api seed && turbo run dev"
+```
+
+| Step | Command | Effect |
+|---|---|---|
+| 1 | `pnpm db:up` | Starts Postgres 17 in Docker on :5432 (no-op if already running). **Docker must be running**, or `pnpm dev` stops here |
+| 2 | `pnpm db:migrate` | Applies any new SQL migrations; prints `skip` for applied ones |
+| 3 | `pnpm --filter api seed` | Creates the demo pod (5 players, 10 decks, 14 games) the first time; afterwards it detects the demo user and does nothing |
+| 4 | `turbo run dev` | Starts both apps in parallel (below) |
+
+Each step is safe to repeat, so `pnpm dev` is the only command you need day to day. Pulling a branch with a new migration applies it on the next start. To run the apps without touching the database (e.g. against a DB you've set up differently), use `pnpm turbo run dev`.
+
+Turbo then runs each app's `dev` script in parallel:
 
 | App | Command | Notes |
 |---|---|---|
@@ -121,12 +133,15 @@ Run from the repo root.
 | Symptom | Likely cause | Fix |
 |---|---|---|
 | API exits with `Invalid environment variables: { DATABASE_URL: [...] }` | `.env` missing or incomplete | `cp apps/api/.env.example apps/api/.env` |
+| `pnpm dev` fails immediately with a Docker error | Docker daemon not running | Start Docker Desktop / the daemon, rerun `pnpm dev` |
+| First `pnpm dev` (or the one after `db:reset`) fails at migrate with `ECONNREFUSED` or "the database system is starting up" | `db:up` returns as soon as the container starts; a fresh Postgres volume needs a few seconds to initialise | Wait a moment and rerun `pnpm dev` |
 | `ECONNREFUSED 127.0.0.1:5432` | Postgres not running, or another Postgres owns the port | `pnpm db:up`; stop the other instance |
-| `relation "playgroup" does not exist` | Migrations not applied | `pnpm db:migrate` |
+| `relation "playgroup" does not exist` | Migrations not applied (e.g. you started with `pnpm turbo run dev`) | `pnpm db:migrate`, or start with `pnpm dev` |
+| `pnpm dev` stops at the migrate step | A migration in your branch has an SQL error; the file was rolled back | Fix the SQL and rerun (Module 7) |
 | Sign-in returns 403 for a new email account | Email not verified yet (`requireEmailVerification: true`) | Click the link printed in the API console |
 | Requests from the SPA fail with CORS errors | SPA on a different origin than `FRONTEND_URL` / `localhost:5173` | Use `http://localhost:5173`, or set `FRONTEND_URL` |
 | `pnpm install` complains about the lockfile | Wrong pnpm version | `corepack enable`, then reinstall |
-| Want a clean slate | | `pnpm db:reset && pnpm db:migrate && pnpm --filter api seed` |
+| Want a clean slate | | `pnpm db:reset && pnpm dev` (reset wipes the volume; `pnpm dev` migrates and reseeds) |
 
 ---
 
@@ -157,6 +172,7 @@ Run from the repo root.
 - Node 26 + corepack-pinned pnpm + Docker for Postgres.
 - `apps/api/.env` is Zod-validated: a bad value stops the API at startup.
 - Without SMTP, verification links appear in the API console.
+- `pnpm dev` starts Postgres, migrates, seeds (first run only) and then both apps; every step is safe to repeat.
 - The seed builds a realistic pod through the real services and is safe to rerun.
 
 ## Knowledge check
@@ -206,7 +222,7 @@ Run from the repo root.
 
 <details><summary>Answer</summary>
 
-**C.** The seed checks for the demo user and exits early. To start over use `pnpm db:reset`, then migrate and seed again.
+**C.** The seed checks for the demo user and exits early. To start over, run `pnpm db:reset && pnpm dev`, which migrates and reseeds the empty database.
 </details>
 
 ---
