@@ -302,6 +302,7 @@ const takenIdsForSheet = computed(() =>
               ? 'text-fg-4 cursor-not-allowed'
               : 'text-fg-1 cursor-pointer'"
             :disabled="seats.length <= 2"
+            :aria-label="t('game.setup.removeSeat')"
             @click="seats.length > 2 && setSeatCount(seats.length - 1)"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -317,6 +318,7 @@ const takenIdsForSheet = computed(() =>
               ? 'bg-transparent text-fg-4 cursor-not-allowed'
               : 'bg-arcane/16 text-arcane-2 cursor-pointer'"
             :disabled="seats.length >= 6"
+            :aria-label="t('game.setup.addSeat')"
             @click="seats.length < 6 && setSeatCount(seats.length + 1)"
           >
             <SbIcon name="plus" :size="12" :stroke="2.6" />

@@ -49,6 +49,34 @@ Merge it whenever you want to cut a version. That tags `vX.Y.Z` and publishes th
 
 > The release PR is opened with the workflow's built-in token, and GitHub doesn't run workflows for PRs created that way. Its required checks never report. Merge it with **"Merge without waiting for requirements"** (an admin bypass). It only touches the changelog and version numbers.
 
+## End-to-end tests
+
+The Playwright suite in [`apps/frontend/e2e/`](apps/frontend/e2e) drives the real app the way a player uses it: the built SPA, the API and Postgres, in Chromium at a 360px-wide phone viewport.
+
+```sh
+pnpm db:up && pnpm test:e2e
+```
+
+That's all a fresh checkout needs (plus Docker). Each run:
+
+1. drops, recreates, migrates and seeds a separate **`svey_e2e`** database on the docker-compose Postgres. Your dev database (`svey`) is never touched, and the reset refuses any database name that doesn't end in `_e2e`;
+2. starts the API on **:3100** ([`apps/api/.env.e2e`](apps/api/.env.e2e)) and serves a production build with `vite preview` on **:4174** ([`apps/frontend/.env.e2e`](apps/frontend/.env.e2e)). Both ports must be free;
+3. runs the specs. Each spec creates its own pod through the API, so specs don't depend on each other.
+
+Both `.env.e2e` files are committed on purpose: like `apps/api/.env.test`, they hold dummy values only.
+
+Useful variations (from `apps/frontend`):
+- `pnpm test:e2e --ui` or `pnpm test:e2e --headed` to watch the browser.
+- `pnpm exec playwright show-report` to open the HTML report after a failure (traces and screenshots included).
+- On Linux/WSL, if Chromium is missing system libraries: `pnpm exec playwright install --with-deps chromium` (needs sudo).
+
+Writing specs:
+- Import `test`/`expect` from [`e2e/fixtures.ts`](apps/frontend/e2e/fixtures.ts). Every test starts signed in as the demo user (Alex) and can ask for a fresh `pod` that Jordan has joined. Drivers for game setup live in `e2e/helpers/game.ts`.
+- Locate by role and accessible name using the English copy from `src/i18n/locales/en`. If a control has no accessible name, give it an `aria-label` through `t()` rather than adding a test id.
+- The suite never leaves localhost: external requests are aborted and the card-art endpoints (`/api/cards/**`) are stubbed.
+
+In CI, the **End-to-end (Playwright)** job runs on pull requests with a Postgres service container and uploads the `playwright-report` artifact when it fails. It isn't a required check yet.
+
 ## Things to watch
 
 - **Migrations are forward-only.** They go live with the merge that contains them. Prefer additive changes (new nullable columns, new tables) that the previous app version can live with. Never edit a migration that has shipped.

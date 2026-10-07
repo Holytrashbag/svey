@@ -22,6 +22,8 @@ const emit = defineEmits<{ close: [] }>()
 
   <!-- Sheet panel -->
   <div
+    role="dialog"
+    :aria-label="title || undefined"
     class="absolute left-0 right-0 bottom-0 z-40 bg-bg-1/94 backdrop-blur-[20px] backdrop-saturate-140 rounded-t-3xl border-t border-white/10 shadow-[0_-16px_40px_rgba(0,0,0,0.48)] pt-3 px-5 pb-7 max-h-[82%] flex flex-col box-border transition-transform duration-260 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
     :inert="!open"
     :class="open ? 'translate-y-0' : 'translate-y-full'"

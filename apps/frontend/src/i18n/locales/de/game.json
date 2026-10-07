@@ -30,7 +30,9 @@
     "startGame": "Spiel starten",
     "ctaSeat2": "Setz mindestens 2 Spieler",
     "ctaPickDeck": "Wähl ein Deck für {missing} weitere",
-    "guestShort": "G"
+    "guestShort": "G",
+    "addSeat": "Platz hinzufügen",
+    "removeSeat": "Platz entfernen"
   },
   "seatCard": {
     "seat": "Platz",

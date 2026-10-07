@@ -54,6 +54,8 @@ const avatarTintClass = computed(() => {
 
 <template>
   <div
+    role="group"
+    :aria-label="t('game.seat', { n: idx + 1 })"
     class="relative overflow-hidden rounded-[14px] min-h-38.5 flex flex-col"
     :class="[
       filled ? 'bg-bg-1 border border-overlay-2' : 'bg-transparent border border-dashed border-overlay-3',

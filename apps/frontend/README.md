@@ -20,6 +20,7 @@ pnpm test           # Vitest (single run); pnpm test:watch for watch mode
 pnpm check-types    # vue-tsc
 pnpm lint:check     # oxlint + ESLint (pnpm lint auto-fixes)
 pnpm build          # type-check + production build
+pnpm test:e2e       # Playwright end-to-end suite (e2e/); needs Postgres, see CONTRIBUTING.md
 ```
 
 ## Environment

@@ -25,6 +25,8 @@ const emit = defineEmits<{ close: [] }>()
 
   <!-- Panel -->
   <div
+    role="dialog"
+    :aria-label="title || undefined"
     class="absolute left-0 right-0 bottom-0 z-40 flex flex-col
            bg-[rgba(14,17,32,0.96)] backdrop-blur-[20px] backdrop-saturate-140
            rounded-t-[24px] border-t border-overlay-3

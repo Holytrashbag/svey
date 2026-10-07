@@ -56,6 +56,7 @@ pnpm lint:check && pnpm check-types && pnpm test && pnpm build
 - If `pnpm install` changed `pnpm-lock.yaml` unexpectedly, find out why before committing it — CI uses `--frozen-lockfile`.
 - On failure: fix it, commit, re-run. Don't open the PR with a known-red build. If a failure is pre-existing on `origin/main`, say so rather than fixing unrelated code silently.
 - Docs/skill-only changes still run it — it's cheap insurance.
+- If the change touches views, stores, the router or the API, also run the end-to-end suite: `pnpm db:up && pnpm test:e2e`. CI runs it as a separate, not-yet-required `End-to-end (Playwright)` job on pull requests.
 
 ## 4. Title
 

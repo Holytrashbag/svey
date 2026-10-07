@@ -103,6 +103,8 @@ onUnmounted(() => {
 
 <template>
   <div
+    role="group"
+    :aria-label="player.name"
     class="relative rounded-[16px] overflow-hidden h-full flex flex-col"
     :style="{
       background: tileBg,

@@ -66,6 +66,7 @@ Notes:
 | `pnpm dev` | Start Postgres, apply migrations, seed demo data (first run only), then run API (watch mode) and frontend (Vite) together |
 | `pnpm build` | Type-check and build both apps |
 | `pnpm test` | API tests (`node:test`) and frontend tests (Vitest) |
+| `pnpm test:e2e` | Playwright end-to-end suite against a freshly seeded `svey_e2e` database (needs `pnpm db:up`) |
 | `pnpm lint:check` / `pnpm lint` | oxlint + ESLint (`lint` auto-fixes) |
 | `pnpm check-types` | `tsc` for the API, `vue-tsc` for the frontend |
 | `pnpm db:up` / `db:down` / `db:reset` | Start, stop, or wipe the local Postgres container |
@@ -162,7 +163,13 @@ pnpm test
 - **Frontend:** game rules, relative-time bucketing, and locale completeness.
 - **API:** token encryption, bracket estimation, error handling, and HTTP smoke tests that boot the full app.
 
-Neither suite needs a database. The API tests read a committed, non-secret [`apps/api/.env.test`](apps/api/.env.test). CI runs lint, type-checks, tests and a production build on every push and pull request.
+Neither unit suite needs a database. The API tests read a committed, non-secret [`apps/api/.env.test`](apps/api/.env.test). CI runs lint, type-checks, tests and a production build on every push and pull request.
+
+```sh
+pnpm db:up && pnpm test:e2e
+```
+
+- **End-to-end:** Playwright drives the built app in Chromium at phone width (360px) against the real API and a freshly seeded Postgres database: sign-in, a full game through the survey, retiring and cancelling. Pull requests run it in CI too. See [CONTRIBUTING.md](CONTRIBUTING.md#end-to-end-tests).
 
 ## Development workflow
 

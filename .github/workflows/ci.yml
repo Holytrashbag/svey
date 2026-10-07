@@ -41,3 +41,68 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  # Playwright against the real stack (Postgres service, migrations, seed data,
+  # API + built SPA). Pull requests only: deploy.yml reuses this workflow as its
+  # gate, and the job isn't a required check until it has proven stable.
+  e2e:
+    name: End-to-end (Playwright)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm --filter frontend exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Install Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter frontend exec playwright install --with-deps chromium
+
+      - name: Install Chromium system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter frontend exec playwright install-deps chromium
+
+      # Resets and seeds svey_e2e (apps/api/.env.e2e), then starts the API and
+      # `vite preview` through Playwright's webServer.
+      - name: End-to-end tests
+        run: pnpm --filter frontend test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: apps/frontend/playwright-report/
+          retention-days: 14
