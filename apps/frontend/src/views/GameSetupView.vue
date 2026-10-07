@@ -7,11 +7,11 @@ import GsSeatCard from '@/components/game-setup/GsSeatCard.vue'
 import GsPlayerSheet from '@/components/game-setup/GsPlayerSheet.vue'
 import GsDeckSheet from '@/components/game-setup/GsDeckSheet.vue'
 import { MANA, AVATAR_ROLE } from '@/lib/mtg'
+import { toGsDeck } from '@/lib/game-setup'
 import type { GsSeat, GsPod, GsDeck } from '@/lib/game-setup'
 import { SESSION_KEY } from '@/lib/game-tracker'
 import type { GameSessionData } from '@/lib/game-tracker'
 import { usePlaygroupStore } from '@/stores/usePlaygroupStore'
-import { useDeckStore } from '@/stores/useDeckStore'
 
 // ── Route ──────────────────────────────────────────────────────────────────────
 
@@ -19,13 +19,12 @@ const router       = useRouter()
 const route        = useRoute()
 const podId        = route.params['id'] as string
 const playgroupStore = usePlaygroupStore()
-const deckStore      = useDeckStore()
 const { t } = useI18n()
 
 onMounted(async () => {
   await Promise.all([
     playgroupStore.fetchPlaygroupDetail(podId),
-    deckStore.fetchDecks(),
+    playgroupStore.fetchPodDecks(podId),
   ])
 })
 
@@ -41,21 +40,8 @@ const pod = computed<GsPod>(() => {
   }
 })
 
-// All non-archived decks owned by the current user, with owner set to their memberId
-const setupDecks = computed<GsDeck[]>(() => {
-  const decks   = deckStore.decks ?? []
-  const myMemberId = playgroupStore.currentPlaygroup?.members.find(m => m.you)?.id ?? ''
-  return decks
-    .filter(d => !d.isArchived)
-    .map(d => ({
-      id:        d.id,
-      owner:     myMemberId,
-      name:      d.name,
-      commander: d.commander ?? undefined,
-      colors:    d.colorIdentity,
-      bracket:   d.bracket,
-    }))
-})
+// Non-archived decks of every pod member; owner is the owning member's id
+const setupDecks = computed<GsDeck[]>(() => playgroupStore.podDecks.map(toGsDeck))
 
 // ── Seat state ─────────────────────────────────────────────────────────────────
 
@@ -405,7 +391,7 @@ const takenIdsForSheet = computed(() =>
       :seat="activeSeat"
       :pod="pod"
       :decks="setupDecks"
-      :seated-player-ids="takenIds"
+      :error="playgroupStore.podDecksError"
       :current-deck-id="activeSeat?.deckId ?? null"
       @close="activeSheet = 'none'"
       @pick="onDeckPicked"

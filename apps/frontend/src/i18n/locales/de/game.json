@@ -59,13 +59,14 @@
   "deckSheet": {
     "pickDeckFor": "Deck wählen für {name}",
     "pickDeck": "Deck wählen",
-    "intro": "Jeder am Tisch kann ein Deck verleihen. Decks, die nicht {name} gehören, sind als {borrowed} markiert.",
+    "intro": "Jeder im Pod kann ein Deck verleihen, auch wenn er nicht mitspielt. Decks, die nicht {name} gehören, sind als {borrowed} markiert.",
     "thisPlayer": "diesen Spieler",
     "borrowed": "geliehen",
     "ownDecks": "{name}s Decks",
-    "borrowFromTable": "Vom Tisch leihen",
-    "ownerSuffix": "{name}s",
-    "empty": "Noch keine Decks. Setz einen Spieler mit Deck, dann kann er es verleihen."
+    "borrowFromPod": "Aus dem Pod leihen",
+    "borrowedTag": "Geliehen",
+    "empty": "Noch keine Decks in diesem Pod. Importier eins unter Decks, dann taucht es hier auf.",
+    "loadError": "Die Decks des Pods konnten nicht geladen werden. Lad die Seite neu und versuch's nochmal."
   },
   "tracker": {
     "alive": "am Leben",

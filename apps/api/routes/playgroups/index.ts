@@ -56,6 +56,11 @@ const playgroups: FastifyPluginAsync = async (fastify) => {
     return reply.send(detail)
   })
 
+  f.get('/:id/decks', { schema: { params: IdParamsSchema } }, async (request, reply) => {
+    const decks = await playgroupService.listPodDecks(db, request.user.id, request.params.id)
+    return reply.send({ decks })
+  })
+
   f.patch('/:id/members/:memberId', { schema: { body: UpdateMemberSchema, params: MemberParamsSchema } }, async (request, reply) => {
     if (request.body.accept === true) {
       await playgroupService.acceptInvite(db, request.user.id, request.params.memberId)

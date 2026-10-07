@@ -2,9 +2,10 @@ import { randomBytes } from 'node:crypto'
 import { pgTable, uuid, text as pgText } from 'drizzle-orm/pg-core'
 import { eq, and, inArray, count, sql, desc, gte, gt } from 'drizzle-orm'
 import type { Db } from '../lib/db.ts'
-import { playgroup, playgroupMember, game, gamePlayer, deck } from '../db/schema.ts'
+import { playgroup, playgroupMember, game, gamePlayer, deck, decklistCard } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
 import { summarizePodGames, tallyMemberRecords, threatRating, winRate } from '../lib/pod-stats.ts'
+import { activeMemberIdByUserId, assertActivePodMember, buildPodDecks, type PodDeckItem } from '../lib/pod-decks.ts'
 import * as notificationService from './notification.service.ts'
 
 // Read-only reference to Better Auth's user table (not managed by our migrations)
@@ -584,6 +585,45 @@ export async function getPlaygroupDetail(
     members:    memberDetails,
     recent:     recentItems,
   }
+}
+
+// ── listPodDecks ───────────────────────────────────────────────────────────────
+
+/** Non-archived decks of every active member, for picking (or borrowing) at game setup. */
+export async function listPodDecks(
+  dbClient: Db,
+  userId: string,
+  playgroupId: string,
+): Promise<PodDeckItem[]> {
+  const members = await dbClient
+    .select({ id: playgroupMember.id, userId: playgroupMember.userId, isPending: playgroupMember.isPending })
+    .from(playgroupMember)
+    .where(eq(playgroupMember.playgroupId, playgroupId))
+
+  assertActivePodMember(members, userId)
+
+  const ownerIds = [...activeMemberIdByUserId(members).keys()]
+  const decks = await dbClient
+    .select({
+      id:               deck.id,
+      ownerUserId:      deck.ownerUserId,
+      name:             deck.name,
+      colorIdentity:    deck.colorIdentity,
+      bracketEstimated: deck.bracketEstimated,
+      bracketOverride:  deck.bracketOverride,
+      isArchived:       deck.isArchived,
+    })
+    .from(deck)
+    .where(and(inArray(deck.ownerUserId, ownerIds), eq(deck.isArchived, false)))
+
+  if (decks.length === 0) return []
+
+  const commanders = await dbClient
+    .select({ deckId: decklistCard.deckId, cardName: decklistCard.cardName })
+    .from(decklistCard)
+    .where(and(eq(decklistCard.isCommander, true), inArray(decklistCard.deckId, decks.map(d => d.id))))
+
+  return buildPodDecks(members, decks, commanders)
 }
 
 // ── acceptInvite ───────────────────────────────────────────────────────────────

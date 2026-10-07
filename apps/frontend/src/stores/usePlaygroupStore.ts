@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { api } from '@/lib/api'
-import type { ActivePlaygroupItem, PendingInviteItem, PlaygroupDetail, PendingMemberItem } from '@/types/api'
+import type { ActivePlaygroupItem, PendingInviteItem, PlaygroupDetail, PendingMemberItem, PodDeckItem } from '@/types/api'
 
-export type { PodMemberItem, ActivePlaygroupItem, PendingInviteItem, PlaygroupMemberDetail, RecentGameItem, PlaygroupDetail, PendingMemberItem } from '@/types/api'
+export type { PodMemberItem, ActivePlaygroupItem, PendingInviteItem, PlaygroupMemberDetail, RecentGameItem, PlaygroupDetail, PendingMemberItem, PodDeckItem } from '@/types/api'
 
 // ── Store ──────────────────────────────────────────────────────────────────────
 
@@ -16,6 +16,10 @@ export const usePlaygroupStore = defineStore('playgroups', () => {
   const currentPlaygroup  = ref<PlaygroupDetail | null>(null)
   const detailLoading     = ref(false)
   const detailError       = ref<string | null>(null)
+
+  const podDecks        = ref<PodDeckItem[]>([])
+  const podDecksLoading = ref(false)
+  const podDecksError   = ref<string | null>(null)
 
   const pendingMembers        = ref<PendingMemberItem[]>([])
   const pendingMembersLoading = ref(false)
@@ -79,6 +83,20 @@ export const usePlaygroupStore = defineStore('playgroups', () => {
       detailError.value = e instanceof Error ? e.message : 'Failed to load playgroup'
     } finally {
       detailLoading.value = false
+    }
+  }
+
+  async function fetchPodDecks(id: string) {
+    podDecksLoading.value = true
+    podDecks.value        = []
+    podDecksError.value   = null
+    try {
+      const res = await api.get<{ decks: PodDeckItem[] }>(`/playgroups/${id}/decks`)
+      podDecks.value = res.decks
+    } catch (e) {
+      podDecksError.value = e instanceof Error ? e.message : 'Failed to load pod decks'
+    } finally {
+      podDecksLoading.value = false
     }
   }
 
@@ -165,6 +183,7 @@ export const usePlaygroupStore = defineStore('playgroups', () => {
   return {
     active, pending, loading, error,
     currentPlaygroup, detailLoading, detailError,
+    podDecks, podDecksLoading, podDecksError,
     pendingMembers, pendingMembersLoading,
     createLoading, createError,
     joinLoading, joinError,
@@ -172,6 +191,7 @@ export const usePlaygroupStore = defineStore('playgroups', () => {
     createPlaygroup,
     joinPlaygroup,
     fetchPlaygroupDetail,
+    fetchPodDecks,
     acceptInvite,
     declineInvite,
     removeMember,
