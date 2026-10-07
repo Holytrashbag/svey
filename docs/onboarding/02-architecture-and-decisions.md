@@ -124,7 +124,7 @@ Each row is effectively a lightweight architecture decision record. "Trade-off" 
 
 **Why is game state client-side?** At a game table, connectivity is unreliable and latency is annoying. The domain is also single-writer (one phone). Keeping the tracker as pure in-memory state with pure rule functions (`autoDeath`, `gridForCount`) makes it fast, offline-capable and easy to unit-test. The cost is durability, and persisting tracker state to `localStorage` after each change is the top known gap.
 
-**Why does the API run TypeScript without a build in dev?** `pnpm dev` runs `node --import tsx --watch server.ts`; tests and scripts use `node --experimental-strip-types`. Only the Docker image compiles to `dist/` (`tsc -p tsconfig.build.json`). Imports therefore use explicit `.ts` extensions (`import { db } from '../lib/db.ts'`), and `rewriteRelativeImportExtensions` turns them into `.js` in the compiled output.
+**Why does the API run TypeScript without a build in dev?** The API's `dev` script runs `node --import tsx --watch server.ts`; tests and scripts use `node --experimental-strip-types`. Only the Docker image compiles to `dist/` (`tsc -p tsconfig.build.json`). Imports therefore use explicit `.ts` extensions (`import { db } from '../lib/db.ts'`), and `rewriteRelativeImportExtensions` turns them into `.js` in the compiled output.
 
 ---
 

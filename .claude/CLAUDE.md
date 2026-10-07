@@ -47,7 +47,7 @@ When a workflow or convention changes, update the matching skill in the same PR.
 
 Run from the **repo root**:
 
-- `pnpm dev` — API (watch) + frontend (Vite)
+- `pnpm dev` — starts Postgres, applies migrations, seeds demo data (first run only), then API (watch) + frontend (Vite)
 - `pnpm lint:check` · `pnpm check-types` · `pnpm test` · `pnpm build` — exactly what CI runs
 - `pnpm db:up` / `db:down` / `db:reset` — local Postgres in Docker
 - `pnpm db:migrate` — apply SQL migrations

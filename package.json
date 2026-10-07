@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "pnpm db:up && pnpm db:migrate && pnpm --filter api seed && turbo run dev",
     "lint": "turbo run lint",
     "lint:check": "turbo run lint:check",
     "check-types": "turbo run check-types",
