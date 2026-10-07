@@ -11,9 +11,12 @@
     "build": "run-p check-types \"build-only {@}\" --",
     "build-only": "vite build",
     "preview": "vite preview",
+    "build:e2e": "vite build --mode e2e --outDir dist-e2e",
+    "preview:e2e": "vite preview --mode e2e --outDir dist-e2e --port 4174 --strictPort",
     "check-types": "vue-tsc --build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "lint": "run-s lint:oxlint lint:eslint",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
@@ -33,6 +36,7 @@
     "vue-router": "^5.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tsconfig/node26": "^26.0.1",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.4",

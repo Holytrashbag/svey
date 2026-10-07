@@ -1,0 +1,15 @@
+// TSConfig for the Playwright end-to-end suite (e2e/), which runs in Node.js
+// but hands callbacks to the browser (page.evaluate), hence the DOM lib.
+{
+  "extends": "@tsconfig/node26/tsconfig.json",
+  "include": ["e2e/**/*.ts"],
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["ES2024", "DOM"],
+    "types": ["node"],
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.e2e.tsbuildinfo"
+  }
+}
