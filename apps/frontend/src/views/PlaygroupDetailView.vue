@@ -13,6 +13,7 @@ import PlaygroupInviteSheet from '@/components/playgroups/PlaygroupInviteSheet.v
 import { usePlaygroupStore } from '@/stores/usePlaygroupStore'
 import SbSpinner from '@/components/ui/SbSpinner.vue'
 import { useFormat } from '@/composables/useFormat'
+import { sortStandings } from '@/lib/pod-standings'
 import { useI18n } from 'vue-i18n'
 
 const { relative: formatRelativeTime, founded: formatFounded } = useFormat()
@@ -37,10 +38,8 @@ const myRole = computed<'admin' | 'member'>(() =>
 )
 
 const sortedMembers = computed(() =>
-  pod.value ? [...pod.value.members].sort((a, b) => b.wins - a.wins) : [],
+  pod.value ? sortStandings(pod.value.members) : [],
 )
-
-const maxWins = computed(() => sortedMembers.value[0]?.wins ?? 1)
 
 const memberById = (id: string) => pod.value?.members.find(m => m.id === id)
 
@@ -184,8 +183,8 @@ const { onNav } = useNav()
                 :rank="i + 1"
                 :name="m.name"
                 :wins="m.wins"
-                :winrate="pod.totalGames > 0 ? Math.round((m.wins / pod.totalGames) * 100) : 0"
-                :bar-width="maxWins > 0 ? Math.round((m.wins / maxWins) * 100) : 0"
+                :winrate="m.winRate"
+                :bar-width="m.winRate ?? 0"
                 :you="m.you"
                 :avatar-url="m.avatarUrl"
               />
@@ -229,7 +228,7 @@ const { onNav } = useNav()
                 :role="m.role"
                 :main-deck="m.mainDeck ?? '—'"
                 :wins="m.wins"
-                :winrate="pod.totalGames > 0 ? Math.round((m.wins / pod.totalGames) * 100) : 0"
+                :winrate="m.winRate"
                 :threat="m.threat"
                 :you="m.you"
                 :can-remove="myRole === 'admin' && !m.you"
