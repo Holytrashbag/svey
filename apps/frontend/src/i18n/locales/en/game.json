@@ -59,13 +59,14 @@
   "deckSheet": {
     "pickDeckFor": "Pick a deck for {name}",
     "pickDeck": "Pick a deck",
-    "intro": "Anyone at the table can lend a deck. Decks not owned by {name} are marked {borrowed}.",
+    "intro": "Anyone in the pod can lend a deck, even if they're not at the table. Decks not owned by {name} are marked {borrowed}.",
     "thisPlayer": "this player",
     "borrowed": "borrowed",
     "ownDecks": "{name}'s decks",
-    "borrowFromTable": "Borrow from the table",
-    "ownerSuffix": "{name}'s",
-    "empty": "No decks yet. Seat a player who has a deck and they can lend it around."
+    "borrowFromPod": "Borrow from the pod",
+    "borrowedTag": "Borrowed",
+    "empty": "No decks in this pod yet. Import one under Decks and it shows up here.",
+    "loadError": "Couldn't load the pod's decks. Reload the page to try again."
   },
   "tracker": {
     "alive": "alive",

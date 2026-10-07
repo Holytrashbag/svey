@@ -86,8 +86,18 @@ export const usePlaygroupStore = defineStore('playgroups', () => {
     }
   }
 
-  async function fetchPodDecks(_id: string) {
-    throw new Error('not implemented')
+  async function fetchPodDecks(id: string) {
+    podDecksLoading.value = true
+    podDecks.value        = []
+    podDecksError.value   = null
+    try {
+      const res = await api.get<{ decks: PodDeckItem[] }>(`/playgroups/${id}/decks`)
+      podDecks.value = res.decks
+    } catch (e) {
+      podDecksError.value = e instanceof Error ? e.message : 'Failed to load pod decks'
+    } finally {
+      podDecksLoading.value = false
+    }
   }
 
   async function acceptInvite(playgroupId: string, memberId: string) {

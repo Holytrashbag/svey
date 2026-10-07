@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SbIcon from '@/components/ui/SbIcon.vue'
 import { MANA, colorStripBg, deckIconBg } from '@/lib/mtg'
+import { isBorrowedDeck } from '@/lib/game-setup'
 import type { GsSeat, GsPod, GsDeck } from '@/lib/game-setup'
 
 const { t } = useI18n()
@@ -42,9 +43,7 @@ const deckOwner = computed(() =>
   deck.value ? props.pod.members.find(m => m.id === deck.value!.owner) : undefined,
 )
 
-const borrowed = computed(() =>
-  !!(deck.value && member.value && deck.value.owner !== member.value.id),
-)
+const borrowed = computed(() => isBorrowedDeck(props.seat, deck.value))
 
 const avatarTintClass = computed(() => {
   if (isGuest.value) return 'bg-[#3D2E10] text-crown'

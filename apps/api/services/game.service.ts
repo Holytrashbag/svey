@@ -10,6 +10,7 @@ import {
   surveyResponse,
 } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
+import { assertDecksInPod } from '../lib/pod-decks.ts'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -90,6 +91,20 @@ export async function createGame(dbClient: Db, userId: string, body: CreateGameB
       throw Errors.badRequest('All players must be members of this playgroup or guests.')
     }
   }
+
+  // Every deck (borrowed or not, guests included) must belong to a member of this playgroup.
+  const deckIds = [...new Set(body.players.map(p => p.deckId))]
+  const [deckRows, podMembers] = await Promise.all([
+    dbClient
+      .select({ id: deck.id, ownerUserId: deck.ownerUserId })
+      .from(deck)
+      .where(inArray(deck.id, deckIds)),
+    dbClient
+      .select({ id: playgroupMember.id, userId: playgroupMember.userId, isPending: playgroupMember.isPending })
+      .from(playgroupMember)
+      .where(eq(playgroupMember.playgroupId, body.podId)),
+  ])
+  assertDecksInPod(deckIds, deckRows, podMembers)
 
   let gameId = ''
 

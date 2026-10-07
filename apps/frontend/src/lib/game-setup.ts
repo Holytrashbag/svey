@@ -39,18 +39,39 @@ export type GsDeckChoices = {
   borrowed: GsDeckGroup[]
 }
 
-export function toGsDeck(_d: PodDeckItem): GsDeck {
-  throw new Error('not implemented')
+export function toGsDeck(d: PodDeckItem): GsDeck {
+  return {
+    id:        d.id,
+    owner:     d.ownerMemberId,
+    name:      d.name,
+    commander: d.commander ?? undefined,
+    colors:    d.colorIdentity,
+    bracket:   d.bracket,
+  }
 }
 
+const byName = (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)
+
+/**
+ * Deck choices for one seat: the pilot's own decks first, then every other
+ * pod member's decks grouped by owner. Guests own nothing, so all their
+ * decks are borrowed. Decks whose owner isn't in the pod are dropped.
+ */
 export function deckChoicesForSeat(
-  _decks: readonly GsDeck[],
-  _members: readonly GsMember[],
-  _seat: GsSeat | null,
+  decks: readonly GsDeck[],
+  members: readonly GsMember[],
+  seat: GsSeat | null,
 ): GsDeckChoices {
-  throw new Error('not implemented')
+  const pilotId = seat && !seat.isGuest ? seat.playerId : null
+  const own = decks.filter(d => d.owner === pilotId).sort(byName)
+  const borrowed = members
+    .filter(m => m.id !== pilotId)
+    .map(owner => ({ owner, decks: decks.filter(d => d.owner === owner.id).sort(byName) }))
+    .filter(g => g.decks.length > 0)
+    .sort((a, b) => byName(a.owner, b.owner))
+  return { own: pilotId && members.some(m => m.id === pilotId) ? own : [], borrowed }
 }
 
-export function isBorrowedDeck(_seat: GsSeat, _deck: GsDeck | undefined): boolean {
-  throw new Error('not implemented')
+export function isBorrowedDeck(seat: GsSeat, deck: GsDeck | undefined): boolean {
+  return !!deck && (seat.isGuest || deck.owner !== seat.playerId)
 }
