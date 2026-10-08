@@ -24,6 +24,7 @@
     "title": "This season · in {name}",
     "wins": "Wins",
     "winShare": "Win rate",
+    "allPods": "All pods",
     "threat": "Threat"
   },
   "gameRow": {

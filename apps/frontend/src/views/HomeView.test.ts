@@ -111,7 +111,7 @@ describe('HomeView win rate', () => {
 
   it('wins and streak still come from the selected pod', async () => {
     const games = [1, 2, 3].map((i) => ({
-      id: `g${i}`, winnerId: i === 3 ? 'other' : 'me', deck: 'Deck', when: '2026-01-01T00:00:00.000Z',
+      id: `g${i}`, winnerId: i === 3 ? 'other' : 'me', deck: 'Deck', when: '2026-01-01T00:00:00.000Z', duration: '1h',
     }))
     mockApi(
       () => Promise.resolve({ totalGames: 10, totalWins: 2, winRate: 20, avgPlacement: 2 }),

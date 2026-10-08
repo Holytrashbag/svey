@@ -3,6 +3,7 @@ import { alias } from 'drizzle-orm/pg-core'
 import type { Db } from '../lib/db.ts'
 import { deck, game, gamePlayer, playgroupMember, surveyResponse, decklistCard } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
+import { buildPlayerStats, type PlayerStats } from '../lib/player-stats.ts'
 
 // ── Private helpers ────────────────────────────────────────────────────────────
 
@@ -20,6 +21,7 @@ function buildPlacementsCte(dbClient: Db) {
       .select({
         deckId:    gamePlayer.deckId,
         memberId:  gamePlayer.playgroupMemberId,
+        endReason: game.endReason,
         placement: sql<number>`rank() over (
           partition by ${gamePlayer.gameId}
           order by
@@ -35,49 +37,43 @@ function buildPlacementsCte(dbClient: Db) {
 
 // ── Player stats ───────────────────────────────────────────────────────────────
 
-export type PlayerStats = {
-  totalGames:   number
-  totalWins:    number
-  winRate:      number
-  avgPlacement: number | null
-}
+export type { PlayerStats } from '../lib/player-stats.ts'
 
 export async function getPlayerStats(dbClient: Db, userId: string): Promise<PlayerStats> {
   const memberIds = await fetchMemberIds(dbClient, userId)
 
-  if (memberIds.length === 0) return { totalGames: 0, totalWins: 0, winRate: 0, avgPlacement: null }
+  if (memberIds.length === 0) return buildPlayerStats([], [])
 
-  const [base] = await dbClient
-    .select({
-      games: sql<number>`count(*)::int`,
-      wins:  sql<number>`sum(${gamePlayer.isWinner}::int)::int`,
-    })
-    .from(gamePlayer)
-    .innerJoin(game, eq(game.id, gamePlayer.gameId))
-    .where(and(
-      inArray(gamePlayer.playgroupMemberId, memberIds as [string, ...string[]]),
-      eq(game.status, 'completed'),
-    ))
-
-  if (!base || Number(base.games) === 0) return { totalGames: 0, totalWins: 0, winRate: 0, avgPlacement: null }
-
-  const totalGames = Number(base.games)
-  const totalWins  = Number(base.wins)
-
+  const ids = memberIds as [string, ...string[]]
   const placementsCte = buildPlacementsCte(dbClient)
 
-  const [placementRow] = await dbClient
-    .with(placementsCte)
-    .select({ avg: sql<number | null>`avg(${placementsCte.placement}::float)::float` })
-    .from(placementsCte)
-    .where(inArray(placementsCte.memberId, memberIds as [string, ...string[]]))
+  const [results, placements] = await Promise.all([
+    dbClient
+      .select({
+        endReason: game.endReason,
+        isWinner:  gamePlayer.isWinner,
+        n:         sql<number>`count(*)::int`,
+      })
+      .from(gamePlayer)
+      .innerJoin(game, eq(game.id, gamePlayer.gameId))
+      .where(and(inArray(gamePlayer.playgroupMemberId, ids), eq(game.status, 'completed')))
+      .groupBy(game.endReason, gamePlayer.isWinner),
+    dbClient
+      .with(placementsCte)
+      .select({
+        endReason:    placementsCte.endReason,
+        placementSum: sql<number>`sum(${placementsCte.placement})::float`,
+        n:            sql<number>`count(*)::int`,
+      })
+      .from(placementsCte)
+      .where(inArray(placementsCte.memberId, ids))
+      .groupBy(placementsCte.endReason),
+  ])
 
-  return {
-    totalGames,
-    totalWins,
-    winRate:      Math.round((totalWins / totalGames) * 100),
-    avgPlacement: placementRow?.avg != null ? Number(placementRow.avg) : null,
-  }
+  return buildPlayerStats(
+    results.map(r => ({ ...r, n: Number(r.n) })),
+    placements.map(r => ({ ...r, placementSum: Number(r.placementSum), n: Number(r.n) })),
+  )
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────────

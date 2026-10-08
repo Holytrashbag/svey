@@ -24,10 +24,10 @@ vi.mock('@/lib/api', () => ({
 vi.mock('@/lib/auth-client', () => ({
   authClient: {
     useSession: () => ref({ data: { user: { name: 'Ana', email: 'ana@example.com', image: null, emailVerified: true, createdAt: '2026-01-01T00:00:00.000Z' } } }),
-    sendVerificationEmail: vi.fn(),
-    signOut: vi.fn(),
-    updateUser: vi.fn(),
-    deleteUser: vi.fn(),
+    sendVerificationEmail: vi.fn<() => void>(),
+    signOut: vi.fn<() => void>(),
+    updateUser: vi.fn<() => void>(),
+    deleteUser: vi.fn<() => void>(),
   },
 }))
 

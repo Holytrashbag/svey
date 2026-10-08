@@ -357,7 +357,7 @@ const { onNav } = useNav();
             <SbStat :value="profileStore.stats?.totalGames ?? '—'" :label="t('profile.totalGames')" accent="tide" />
           </div>
           <div class="card-surface p-4">
-            <SbStat :value="profileStore.stats?.winRate ?? '—'" :suffix="profileStore.stats ? '%' : ''" :label="t('profile.winRate')" accent="arcane" />
+            <SbStat :value="profileStore.stats?.winRate ?? '—'" :suffix="profileStore.stats?.winRate != null ? '%' : ''" :label="t('profile.winRate')" accent="arcane" />
           </div>
           <div class="card-surface p-4">
             <SbStat :value="profileStore.stats?.totalWins ?? '—'" :label="t('profile.totalWins')" accent="gold" />

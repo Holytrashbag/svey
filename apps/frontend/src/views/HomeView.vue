@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import { authClient } from "@/lib/auth-client";
 import { usePlaygroupStore } from "@/stores/usePlaygroupStore";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import { useProfileStore } from "@/stores/useProfileStore";
 import { useFormat } from "@/composables/useFormat";
 import { useNav } from "@/composables/useNav";
 import { usePlaygroupStats } from "@/composables/usePlaygroupStats";
@@ -78,6 +79,10 @@ const heroMembers = computed(
 
 const stats = usePlaygroupStats(current);
 
+// Personal win rate across all pods: the same number the Profile page shows.
+const profileStore = useProfileStore();
+const personalWinRate = computed(() => profileStore.stats?.winRate ?? null);
+
 // ─── Games ────────────────────────────────────────────────────────────────────
 
 const games = computed(() => {
@@ -120,6 +125,7 @@ async function switchTo(id: string) {
 
 onMounted(async () => {
   notifStore.fetchNotifications();
+  profileStore.fetchStats();
   await store.fetchMyPlaygroups();
   const first = store.active[0];
   if (first) {
@@ -205,7 +211,7 @@ const { onNav } = useNav();
         <div class="mb-10">
           <SeasonStrip
             :wins="stats.wins"
-            :winrate="stats.winrate"
+            :winrate="personalWinRate"
             :threat="stats.threat"
             :playgroup-name="current.name"
           />

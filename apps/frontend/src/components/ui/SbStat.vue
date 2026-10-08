@@ -18,7 +18,7 @@ const valueColor = computed(() => (props.accent ? accentColorMap[props.accent] :
 </script>
 
 <template>
-  <div class="flex flex-col gap-1">
+  <div class="flex flex-col gap-1" role="group" :aria-label="label">
     <div
       class="font-display font-bold leading-none tabular-nums text-display tracking-headline"
       :class="valueColor"
