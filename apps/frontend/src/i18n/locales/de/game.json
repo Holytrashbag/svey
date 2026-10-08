@@ -114,9 +114,9 @@
   },
   "cmdrDmg": {
     "title": "Commander-Schaden an {name}",
-    "subtitle": "21 von einem einzelnen Commander beendet das Spiel für sie. Tracke jeden Angreifer einzeln.",
-    "less": "Weniger",
-    "more": "Mehr"
+    "subtitle": "Commander-Schaden wird auch vom Leben abgezogen, du musst es nicht extra anpassen. 21 von einem einzelnen Commander beendet das Spiel für sie.",
+    "less": "Weniger Schaden von {name}",
+    "more": "Mehr Schaden von {name}"
   },
   "endReasons": {
     "why": "Warum?",

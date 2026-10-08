@@ -53,6 +53,7 @@ describe('GtPlayerTile life delta', () => {
   it('counts its own +/- buttons once', async () => {
     const w = render()
     const minus = w.get('button[aria-label="Subtract 1 life"]')
+    vi.advanceTimersByTime(60) // faked performance.now starts at 0, inside the 50ms guard
     await minus.trigger('click')
     await setLife(w, 39)
     vi.advanceTimersByTime(60)

@@ -9,7 +9,7 @@ import GtConcedeSheet from '@/components/game-tracker/GtConcedeSheet.vue'
 import GtManualDeathSheet from '@/components/game-tracker/GtManualDeathSheet.vue'
 import GtGameMenu from '@/components/game-tracker/GtGameMenu.vue'
 import {
-  autoDeath, gridForCount,
+  applyCmdrDmg, autoDeath, gridForCount,
   SESSION_KEY, RESULT_KEY,
 } from '@/lib/game-tracker'
 import type { GtPlayer, GameSessionData, GameResultData } from '@/lib/game-tracker'
@@ -160,22 +160,10 @@ function onPoison(idx: number) {
   if (p) updatePlayer(idx, { poison: Math.min(15, p.poison + 1) })
 }
 
-function onCmdrDmgChange(targetIdx: number, attackerIdx: number, dmg: number) {
+function onCmdrDmg(targetIdx: number, attackerIdx: number, dmg: number) {
   const p = players.value[targetIdx]
-  if (!p) return
-  const cmdrDmg = { ...p.cmdrDmg, [attackerIdx]: dmg }
-  const next = { ...p, cmdrDmg }
-  const cause = autoDeath(next)
-  if (cause && !next.dead) {
-    next.dead = true
-    next.deathAt = elapsed.value
-    next.deathCause = cause
-  }
-  players.value[targetIdx] = next
-  const alive = players.value.filter(p => !p.dead)
-  if (!ended.value && alive.length === 1 && players.value.length > 1) {
-    onEndGame()
-  }
+  if (!p || p.dead) return // no revive: a dead target's numbers are frozen
+  updatePlayer(targetIdx, applyCmdrDmg(p, attackerIdx, dmg))
 }
 
 function onManualDeath(idx: number) {
@@ -305,7 +293,7 @@ function onCancelGame() {
       :target="activePlayer"
       :players="players"
       @close="closeSheet"
-      @change="(attacker, dmg) => onCmdrDmgChange(activeSeatIdx, attacker, dmg)"
+      @change="(attacker, dmg) => onCmdrDmg(activeSeatIdx, attacker, dmg)"
     />
 
     <GtManualDeathSheet

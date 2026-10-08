@@ -114,9 +114,9 @@
   },
   "cmdrDmg": {
     "title": "Commander damage on {name}",
-    "subtitle": "21 from a single commander ends the game for them. Track each attacker separately.",
-    "less": "Less",
-    "more": "More"
+    "subtitle": "Commander damage also comes off their life, no need to adjust it separately. 21 from a single commander ends the game for them.",
+    "less": "Less damage from {name}",
+    "more": "More damage from {name}"
   },
   "endReasons": {
     "why": "Why?",

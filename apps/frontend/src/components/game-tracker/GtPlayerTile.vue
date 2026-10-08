@@ -87,14 +87,21 @@ function handleLifeChange(delta: number) {
   const now = performance.now()
   if (now - lastClickTime < 50) return
   lastClickTime = now
-  lifeDelta.value += delta
   emit('lifeChange', delta)
-  if (deltaTimer) clearTimeout(deltaTimer)
-  deltaTimer = setTimeout(() => {
-    lifeDelta.value = 0
-    deltaTimer = null
-  }, 5000)
 }
+
+// Any life change (own buttons or commander damage) builds the running delta.
+watch(
+  () => props.player.life,
+  (next, prev) => {
+    lifeDelta.value += next - prev
+    if (deltaTimer) clearTimeout(deltaTimer)
+    deltaTimer = setTimeout(() => {
+      lifeDelta.value = 0
+      deltaTimer = null
+    }, 5000)
+  },
+)
 
 onUnmounted(() => {
   if (deltaTimer) clearTimeout(deltaTimer)

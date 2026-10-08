@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GtSheet from './GtSheet.vue'
+import { CMDR_DMG_MAX } from '@/lib/game-tracker'
 import type { GtPlayer } from '@/lib/game-tracker'
 
 const { t } = useI18n()
@@ -63,9 +64,10 @@ const avatarTintClass = (p: GtPlayer) => {
         <!-- Stepper -->
         <div class="inline-flex items-center gap-1.5">
           <button
-            class="flex items-center justify-center rounded-[9px] border-0 cursor-pointer p-0"
+            class="flex items-center justify-center rounded-[9px] border-0 cursor-pointer p-0 disabled:opacity-40 disabled:cursor-default"
             style="width: 32px; height: 32px; background: rgba(255,255,255,0.04); color: #C4C1D8; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; line-height: 1;"
-            :aria-label="t('game.cmdrDmg.less')"
+            :aria-label="t('game.cmdrDmg.less', { name: att.name })"
+            :disabled="target.dead"
             @click="emit('change', att.seatIdx, Math.max(0, (target.cmdrDmg[att.seatIdx] ?? 0) - 1))"
           >−</button>
 
@@ -80,14 +82,15 @@ const avatarTintClass = (p: GtPlayer) => {
           >{{ target.cmdrDmg[att.seatIdx] ?? 0 }}</div>
 
           <button
-            class="flex items-center justify-center rounded-[9px] border-0 cursor-pointer p-0"
+            class="flex items-center justify-center rounded-[9px] border-0 cursor-pointer p-0 disabled:opacity-40 disabled:cursor-default"
             style="width: 32px; height: 32px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 18px; line-height: 1;"
             :style="{
               background: (target.cmdrDmg[att.seatIdx] ?? 0) >= 21 ? 'rgba(244,185,66,0.20)' : 'rgba(139,92,246,0.18)',
               color: (target.cmdrDmg[att.seatIdx] ?? 0) >= 21 ? '#F4B942' : '#A78BFA',
             }"
-            :aria-label="t('game.cmdrDmg.more')"
-            @click="emit('change', att.seatIdx, Math.min(99, (target.cmdrDmg[att.seatIdx] ?? 0) + 1))"
+            :aria-label="t('game.cmdrDmg.more', { name: att.name })"
+            :disabled="target.dead"
+            @click="emit('change', att.seatIdx, Math.min(CMDR_DMG_MAX, (target.cmdrDmg[att.seatIdx] ?? 0) + 1))"
           >+</button>
         </div>
       </div>

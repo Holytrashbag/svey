@@ -221,7 +221,8 @@ Routes live in `apps/frontend/src/router/index.ts`; playgroups use the `/pods` p
 - Setup (`GameSetupView`) writes the seats to `localStorage` (`svey:game-session`); the tracker runs fully client-side
 - Tracker state is currently **in memory only** — persisting it after each change and offering a resume is a known gap
 - Commander damage per player: `cmdrDmg: Record<attackerSeatIdx, number>`
-- `autoDeath` (`lib/game-tracker.ts`) runs after every mutation: life ≤ 0, poison ≥ 10, or ≥ 21 damage from a **single** commander
+- Commander damage also lowers life by the same delta (`applyCmdrDmg`); dead players are frozen (no revive)
+- `autoDeath` (`lib/game-tracker.ts`) runs after every mutation: ≥ 21 damage from a **single** commander (checked first, so it wins a tie with life), life ≤ 0, or poison ≥ 10
 - Manual elimination for card effects; concede (multiselect reasons) drops one player
 - **End game** (last player standing) → survey → `POST /api/games` with `endReason: 'won'`
 - **Retire** → survey → saved with `endReason: 'abandoned'` + `abandonReasons`; **Cancel** → nothing is saved
