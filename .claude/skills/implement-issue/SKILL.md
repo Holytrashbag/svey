@@ -33,7 +33,7 @@ Spawn the planner with `Agent`, `subagent_type: "Plan"`, the model from the tabl
 - Read `.claude/skills/plan-ticket/SKILL.md` and `.claude/CLAUDE.md`, then follow plan-ticket sections 2–3 and its "Rules the plan must respect". It must **not** stop for approval and must **not** write files.
 - Add a **Tests first** section that lists every test to write before the implementation. Give each test its file path, test name and the Definition-of-done or Scope item it proves, at two layers:
   - **Unit:** colocated `*.test.ts` next to the pure logic (`apps/frontend/src/lib/`, `apps/api/lib/`, `apps/api/services/`)
-  - **End-to-end:** the deepest layer the repo supports (see [End-to-end layer](#end-to-end-layer))
+  - **End-to-end:** Playwright specs in `apps/frontend/e2e/` (see [End-to-end layer](#end-to-end-layer))
 - Resolve each Open question with the answer the issue proposes. If the issue proposes none and the answer changes behaviour, mark the question **BLOCKING**.
 - Return the plan as Markdown, nothing else.
 
@@ -70,7 +70,7 @@ git switch -c <type>/<issue-number>-<short-slug> origin/main
 2. Run them and confirm they **fail for the reason the plan predicts**: a missing behaviour or a wrong value, not a typo or an import error.
 3. Commit them on their own: `test(<scope>): cover #<n> …`, ending with the session's `Co-Authored-By` trailer.
 
-That commit is the baseline. When you later decide whether a test was wrong, compare against it (`git diff <baseline>.. -- '*.test.ts'`).
+That commit is the baseline. When you later decide whether a test was wrong, compare against it (`git diff <baseline>.. -- '*.test.ts' 'apps/frontend/e2e/**'`).
 
 ## 6. Implement → test loop (max 5 rounds)
 
@@ -133,14 +133,13 @@ When feedback arrives (in chat, or as a new issue comment the user points you to
 
 ## End-to-end layer
 
-Use the first one of these that exists:
+The repo has a **Playwright suite** in `apps/frontend/e2e/` that runs against the real stack: a `svey_e2e` database that is dropped, migrated and seeded on every run, the API on :3100 (`apps/api/.env.e2e`) and the production build served by `vite preview` on :4174. It uses Chromium at a 360px viewport with the `en-US` locale. Service workers are blocked, external requests are aborted and `/api/cards/**` is stubbed.
 
-1. **Browser suite:** if `apps/frontend/e2e/` and a `test:e2e` script exist (for example Playwright), add specs there and run `pnpm --filter frontend test:e2e`. The Vitest config already excludes `e2e/**`.
-2. **Otherwise**, the repo has no browser suite and no test database, so end-to-end means the full path inside each app:
-   - **API:** route tests in `apps/api/test/routes/<domain>.test.ts`. They build the whole app with `build(t)` from `test/helper.ts` and call `app.inject()`, so they cover the plugins, Zod validation, `requireAuth`, the error envelope `{ error: { code, message } }` and the status codes. They need no database, so cover the paths that don't reach it (validation, 401/404, the error shape) and leave the service logic to unit tests with the DB calls factored out.
-   - **Frontend:** flow tests in Vitest that mount the real view with `@vue/test-utils`, a real Pinia and the router, mocking only `src/lib/api.ts`. Drive the flow from the Definition of done (click, type, assert the rendered `t()` output and the API calls made).
-
-   They run as part of `pnpm --filter api test` and `pnpm --filter frontend test`, so `<end-to-end command>` is already covered in step 6.
+- **Specs:** add `apps/frontend/e2e/<flow>.spec.ts` and import `test`/`expect` from `e2e/fixtures.ts`. Each test starts signed in as the demo user (Alex), and the `pod` fixture gives it a fresh pod that Jordan has joined, so specs never depend on each other. Setup drivers (`openSetup`, `setSeatCount`, `seatMember`, `seatGuest`, `startGame`, `tile`, `dialog`, `openGameMenu`) live in `e2e/helpers/game.ts`.
+- **Locators:** use role and accessible name with the English copy from `src/i18n/locales/en`, scoped to the seat, sheet (`role="dialog"`) or tile (`role="group"`) they act on. If a control has no accessible name, add an `aria-label` through `t()` (en + de) as part of the plan. Don't use test ids.
+- **What to assert:** the rendered UI, the request bodies the app sends (`page.waitForRequest`) and the saved state read back through the API (`page.request`, which shares the signed-in cookies).
+- **Command:** `pnpm db:up && pnpm test:e2e` from the repo root. This is the `<end-to-end command>` in step 6. It needs Docker and free ports 3100 and 4174. If they're unavailable, say so in the PR and list the e2e suite as not run.
+- **Below the browser:** API route tests in `apps/api/test/routes/<domain>.test.ts` (`build(t)` + `app.inject()`, no database) still cover validation, `requireAuth`, the error envelope and status codes. Vitest flow tests that mount a view with a real Pinia and router, mocking only `src/lib/api.ts`, remain the fast way to cover edge cases the browser suite doesn't need to repeat. Both run in `pnpm test`, which must stay database-free.
 
 If a Definition-of-done item can only be proven in a real browser or against a real database, say so in the plan and in the PR's "How I tested it", and list it as a manual check. Don't pretend a test covers it.
 

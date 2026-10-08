@@ -172,7 +172,7 @@ function onAbandon() {
         <div class="text-eyebrow font-bold uppercase tracking-[0.10em] text-fg-3 mb-3">
           {{ t('game.survey.funQuestion') }}
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2" role="group" :aria-label="t('game.survey.funQuestion')">
           <button
             v-for="n in 5"
             :key="n"
@@ -192,7 +192,7 @@ function onAbandon() {
         <div class="text-eyebrow font-bold uppercase tracking-[0.10em] text-fg-3 mb-3">
           {{ t('game.survey.agencyQuestion') }}
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2" role="group" :aria-label="t('game.survey.agencyQuestion')">
           <button
             v-for="n in 5"
             :key="n"

@@ -48,7 +48,8 @@ When a workflow or convention changes, update the matching skill in the same PR.
 Run from the **repo root**:
 
 - `pnpm dev` — starts Postgres, applies migrations, seeds demo data (first run only), then API (watch) + frontend (Vite)
-- `pnpm lint:check` · `pnpm check-types` · `pnpm test` · `pnpm build` — exactly what CI runs
+- `pnpm lint:check` · `pnpm check-types` · `pnpm test` · `pnpm build` — exactly what CI's required check runs
+- `pnpm db:up && pnpm test:e2e` — Playwright end-to-end suite against a freshly reset + seeded `svey_e2e` database (separate, PR-only CI job)
 - `pnpm db:up` / `db:down` / `db:reset` — local Postgres in Docker
 - `pnpm db:migrate` — apply SQL migrations
 - `pnpm --filter api db:generate` — draft migration SQL into the gitignored `db/drizzle/` (see the `add-migration` skill: generate a baseline before editing `schema.ts`, otherwise you get the whole schema)
@@ -254,7 +255,8 @@ The phone is passed around; each player answers individually (skippable): fun ra
 ## Testing
 
 - API: Node's built-in runner (`node --experimental-strip-types --test`), env from the committed `apps/api/.env.test`; no database
-- Frontend: **Vitest** (+ Vue Test Utils for components)
+- Frontend: **Vitest** (+ Vue Test Utils for components); `pnpm test` stays database-free
+- End-to-end: **Playwright** specs (`*.spec.ts`) in `apps/frontend/e2e/`, Chromium at 360px against the real API on :3100 and `vite preview` on :4174, with a `svey_e2e` database recreated every run (`apps/api/jobs/reset-e2e-database.ts`). Use the fixtures in `e2e/fixtures.ts` (signed-in demo user, a fresh `pod` per test) and role/label locators from the `en` copy; give unnamed controls an `aria-label` via `t()` instead of test ids. External network is aborted and `/api/cards/**` is stubbed
 - Unit tests colocate with source (`lib/time.test.ts` next to `lib/time.ts`); API app-level tests live in `apps/api/test/`
 - Test pure logic and anything with branching rules; no test needed for thin route handlers or trivial getters
 
@@ -285,6 +287,6 @@ The phone is passed around; each player answers individually (skippable): fun ra
 - Never add `<style scoped>` unless Tailwind genuinely can't do it
 - Never mutate Pinia state outside `$patch` or actions; never `fetch` from a component
 - Never hard-code user-facing strings — use `t()`
-- Never commit `.env` files, personal data, or anything under `docs/private/` — use `.env.example` placeholders
+- Never commit `.env` files, personal data, or anything under `docs/private/` — use `.env.example` placeholders. Exception: `apps/api/.env.test` and `apps/{api,frontend}/.env.e2e` are committed on purpose and hold dummy values only
 - Never change the DB schema except through a new migration
 - Use plain ASCII quotes in `.vue`/`.ts` source — curly quotes break the parsers (fine inside locale JSON)

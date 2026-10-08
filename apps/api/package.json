@@ -19,7 +19,9 @@
     "start": "node dist/server.js",
     "build": "tsc -p tsconfig.build.json",
     "check-types": "tsc --noEmit",
-    "dev": "node --env-file=.env --import tsx --watch server.ts"
+    "dev": "node --env-file=.env --import tsx --watch server.ts",
+    "e2e:prepare": "node --env-file=.env.e2e --experimental-strip-types jobs/reset-e2e-database.ts && node --env-file=.env.e2e --experimental-strip-types db/migrate.ts && node --env-file=.env.e2e --experimental-strip-types jobs/seed-demo.ts",
+    "e2e:serve": "pnpm e2e:prepare && node --env-file=.env.e2e --import tsx server.ts"
   },
   "dependencies": {
     "@fastify/autoload": "^6.5.0",

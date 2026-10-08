@@ -30,7 +30,9 @@
     "startGame": "Start game",
     "ctaSeat2": "Seat at least 2 players",
     "ctaPickDeck": "Pick a deck for {missing} more",
-    "guestShort": "G"
+    "guestShort": "G",
+    "addSeat": "Add a seat",
+    "removeSeat": "Remove a seat"
   },
   "seatCard": {
     "seat": "Seat",
