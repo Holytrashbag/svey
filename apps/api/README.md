@@ -1,6 +1,6 @@
 # api
 
-Fastify REST API for Svey. All endpoints are served under `/api`. Setup lives in the [root README](../../README.md).
+Fastify REST API for Svey. All endpoints are served under `/api`. Setup lives in [CONTRIBUTING.md](../../CONTRIBUTING.md#getting-started).
 
 ## Layout
 

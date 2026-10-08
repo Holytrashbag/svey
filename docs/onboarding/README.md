@@ -93,8 +93,8 @@ Copy this checklist into your onboarding issue and tick items off as you go.
 
 | Document | Use it for |
 |---|---|
-| [README.md](../../README.md) | Product summary, quick start, architecture diagram |
-| [CONTRIBUTING.md](../../CONTRIBUTING.md) | The GitHub-flow cycle, PR titles, releases |
+| [README.md](../../README.md) | Product pitch, feature tour and screenshots |
+| [CONTRIBUTING.md](../../CONTRIBUTING.md) | Local setup, scripts, architecture diagram, the GitHub-flow cycle, PR titles, releases, deployment, known gaps |
 | [.claude/CLAUDE.md](../../.claude/CLAUDE.md) | The complete coding conventions (also what the AI assistant follows) |
 | [.claude/skills/](../../.claude/skills/) | Step-by-step playbooks: migrations, PRs, issues, releases |
 | [apps/api/README.md](../../apps/api/README.md) | API layout and scripts |
