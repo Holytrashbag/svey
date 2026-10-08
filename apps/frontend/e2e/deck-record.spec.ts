@@ -144,6 +144,6 @@ test.describe('decklist record', () => {
 
     await page.getByRole('button', { name: /^Sort:/ }).click()
     await page.getByRole('button', { name: 'Most wins', exact: true }).click()
-    expect(nonIncreasing(nums(await rowTexts(), /(\d+)W/))).toBe(true)
+    expect(nonIncreasing(nums(await rowTexts(), /(\d+)\s*W/))).toBe(true)
   })
 })
