@@ -1,9 +1,10 @@
-import { eq, and, inArray } from 'drizzle-orm'
+import { eq, and, inArray, sql } from 'drizzle-orm'
 import type { Db } from '../lib/db.ts'
-import { deck, decklistCard } from '../db/schema.ts'
+import { deck, decklistCard, game, gamePlayer } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
 import { parseArchidektUrl, fetchArchidektDeck } from '../lib/archidekt.ts'
 import { estimateBracket } from '../lib/bracket-estimator.ts'
+import { tallyDeckRecords } from '../lib/deck-stats.ts'
 import * as notificationService from './notification.service.ts'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -131,10 +132,25 @@ export async function listDecks(dbClient: Db, userId: string): Promise<DeckListI
   if (decks.length === 0) return []
 
   const deckIds = decks.map(d => d.id)
-  const commanders = await dbClient
-    .select({ deckId: decklistCard.deckId, cardName: decklistCard.cardName })
-    .from(decklistCard)
-    .where(and(eq(decklistCard.isCommander, true), inArray(decklistCard.deckId, deckIds)))
+  // One aggregate for all decks: every pilot counts, retired games are dropped by tallyDeckRecords.
+  const [commanders, resultRows] = await Promise.all([
+    dbClient
+      .select({ deckId: decklistCard.deckId, cardName: decklistCard.cardName })
+      .from(decklistCard)
+      .where(and(eq(decklistCard.isCommander, true), inArray(decklistCard.deckId, deckIds))),
+    dbClient
+      .select({
+        deckId:    gamePlayer.deckId,
+        endReason: game.endReason,
+        isWinner:  gamePlayer.isWinner,
+        n:         sql<number>`count(*)::int`,
+      })
+      .from(gamePlayer)
+      .innerJoin(game, eq(game.id, gamePlayer.gameId))
+      .where(and(inArray(gamePlayer.deckId, deckIds), eq(game.status, 'completed')))
+      .groupBy(gamePlayer.deckId, game.endReason, gamePlayer.isWinner),
+  ])
+  const records = tallyDeckRecords(resultRows.map(r => ({ ...r, n: Number(r.n) })))
 
   const commanderMap: Record<string, string> = {}
   for (const row of commanders) {
@@ -150,8 +166,8 @@ export async function listDecks(dbClient: Db, userId: string): Promise<DeckListI
     isArchived:    d.isArchived,
     archidektId:   d.archidektId,
     lastSyncedAt:  d.lastSyncedAt?.toISOString() ?? null,
-    wins:          0,
-    losses:        0,
+    wins:          records.get(d.id)?.wins ?? 0,
+    losses:        records.get(d.id)?.losses ?? 0,
   }))
 }
 
