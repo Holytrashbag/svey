@@ -11,6 +11,9 @@ import {
 } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
 import { assertDecksInPod } from '../lib/pod-decks.ts'
+import { abandonNotesToStore, buildRecapPlayers, retireDetails, type GameDetailPlayer } from '../lib/game-recap.ts'
+
+export type { GameDetailPlayer }
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -35,17 +38,9 @@ export type CreateGameBody = {
   endReason: 'won' | 'draw' | 'abandoned'
   /** Reason ids picked when a game is retired early (endReason 'abandoned'). */
   abandonReasons?: string[]
+  /** Free-text note typed when a game is retired early (endReason 'abandoned'). */
+  abandonNotes?: string
   players: CreateGamePlayer[]
-}
-
-export type GameDetailPlayer = {
-  name: string
-  isGuest: boolean
-  deck: { name: string; commander: string | null } | null
-  finalLife: number
-  isWinner: boolean
-  deathCause: string
-  deathAt: number | null
 }
 
 export type GameDetail = {
@@ -56,6 +51,9 @@ export type GameDetail = {
   endReason: string
   players: GameDetailPlayer[]
   survey: { avgFun: number | null; avgAgency: number | null; responseCount: number } | null
+  /** Retire reason ids and notes; empty/null unless endReason is 'abandoned'. */
+  abandonReasons: string[]
+  abandonNotes: string | null
 }
 
 // ── Access ────────────────────────────────────────────────────────────────────
@@ -120,6 +118,7 @@ export async function createGame(dbClient: Db, userId: string, body: CreateGameB
         status: 'completed',
         endReason: body.endReason,
         abandonReasons: body.endReason === 'abandoned' ? (body.abandonReasons ?? []) : null,
+        abandonNotes: abandonNotesToStore(body.endReason, body.abandonNotes),
         durationSeconds: body.durationSec,
         startedAt,
         endedAt,
@@ -179,6 +178,8 @@ export async function getGameDetail(dbClient: Db, gameId: string, userId: string
       startedAt:     game.startedAt,
       durationSec:   game.durationSeconds,
       endReason:     game.endReason,
+      abandonReasons: game.abandonReasons,
+      abandonNotes:  game.abandonNotes,
     })
     .from(game)
     .innerJoin(playgroup, eq(playgroup.id, game.playgroupId))
@@ -188,6 +189,7 @@ export async function getGameDetail(dbClient: Db, gameId: string, userId: string
   const gameRow = gameRows[0]
   if (!gameRow) throw Errors.notFound('Game not found')
 
+  // Members only: the recap carries every player's survey note.
   await assertPlaygroupMember(dbClient, gameRow.playgroupId, userId)
 
   const playerRows = await dbClient
@@ -203,10 +205,13 @@ export async function getGameDetail(dbClient: Db, gameId: string, userId: string
       deathCause:  gamePlayer.deathCause,
       diedAt:      gamePlayer.diedAt,
       turnOrder:   gamePlayer.turnOrder,
+      takeaway:    surveyResponse.takeaway,
     })
     .from(gamePlayer)
     .leftJoin(playgroupMember, eq(playgroupMember.id, gamePlayer.playgroupMemberId))
     .leftJoin(deck, eq(deck.id, gamePlayer.deckId))
+    // At most one response per seat (unique on game + seat).
+    .leftJoin(surveyResponse, eq(surveyResponse.gamePlayerId, gamePlayer.id))
     .where(eq(gamePlayer.gameId, gameId))
     .orderBy(gamePlayer.turnOrder)
 
@@ -235,25 +240,7 @@ export async function getGameDetail(dbClient: Db, gameId: string, userId: string
   const surveyRow = surveyRows[0]
   const responseCount = Number(surveyRow?.total ?? 0)
 
-  const players: GameDetailPlayer[] = playerRows.map(p => {
-    const isGuest = p.memberId == null
-    const name = isGuest ? (p.guestName ?? 'Guest') : (p.memberName ?? 'Unknown')
-    const deathAt = p.diedAt != null
-      ? Math.round((p.diedAt.getTime() - gameRow.startedAt.getTime()) / 1000)
-      : null
-
-    return {
-      name,
-      isGuest,
-      deck: p.deckId != null
-        ? { name: p.deckName ?? 'Unknown deck', commander: commanders[p.deckId] ?? null }
-        : null,
-      finalLife: p.finalLife,
-      isWinner: p.isWinner,
-      deathCause: p.deathCause ?? 'none',
-      deathAt,
-    }
-  })
+  const players = buildRecapPlayers(playerRows, commanders, gameRow.startedAt)
 
   return {
     id: gameRow.gameId,
@@ -269,6 +256,7 @@ export async function getGameDetail(dbClient: Db, gameId: string, userId: string
           responseCount,
         }
       : null,
+    ...retireDetails(gameRow.endReason, gameRow.abandonReasons, gameRow.abandonNotes),
   }
 }
 

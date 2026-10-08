@@ -112,7 +112,7 @@ erDiagram
 | `status` | enum `game_status`: `active` \| `completed`. Every saved game is inserted as `completed`; `active` is unused |
 | `end_reason` | enum `game_end_reason`: `won` \| `draw` \| `abandoned` |
 | `abandon_reasons` jsonb | Array of reason ids, e.g. `["time","stall"]`, only for `abandoned` |
-| `abandon_notes` | Not written yet |
+| `abandon_notes` | Free text typed in the retire sheet (≤ 500 chars), only for `abandoned`. Shown on the recap to pod members |
 | `duration_seconds`, `started_at`, `ended_at` | The API sets `ended_at = now()` and `started_at = now() − duration` when the game is saved |
 
 ### `game_player`
@@ -135,7 +135,7 @@ erDiagram
 |---|---|
 | `game_id`, `game_player_id` | Both cascade; **unique** `(game_id, game_player_id)` → at most one response per seat |
 | `fun_rating`, `agency_rating` | Nullable, with `CHECK … BETWEEN 1 AND 5` |
-| `takeaway` | Free text, nullable |
+| `takeaway` | Free text, nullable. Shown on the game recap to every pod member |
 | | A row is only inserted if the player answered at least one question; skipped players have **no row** |
 
 ### `notification`
@@ -197,7 +197,7 @@ This table explains two pieces of code you'll read in Module 8:
 |---|---|
 | `game_decklist_card`, `commander_damage` | In the schema, never written. Intended for decklist snapshots and per-commander damage history |
 | `game.status = 'active'` | Every saved game is `completed` |
-| `game.abandon_notes`, `playgroup.description` | Never written |
+| `playgroup.description` | Never written |
 | Views `deck_stat_view`, `player_stat_view` (from `001`) | Exist in the database; services don't query them. Stats are computed in `stats.service.ts` and `playgroup.service.ts` (Module 10). They are plain views, so they cost nothing |
 
 Before building on any of these, check how they should behave. They were designed before the current stats rules.

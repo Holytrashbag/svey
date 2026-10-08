@@ -21,7 +21,9 @@ const AVATARS_DIR = path.join(
  * Erases a user's personal data while preserving the shared playgroup/game
  * history of other members (GDPR Art. 17, with Art. 17(3) retention for third
  * parties' legitimate interests):
- *   - the user's own survey responses are deleted (personal authored content)
+ *   - the user's own survey responses are deleted (personal authored content),
+ *     including their notes, which every pod member can read on the recap;
+ *     retire notes (game.abandon_notes) belong to the game and are kept
  *   - their seats in past games are anonymised to "Deleted player"
  *   - their playgroup memberships are removed
  *   - games they hosted and playgroups they created are reassigned to the

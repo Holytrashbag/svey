@@ -138,13 +138,16 @@
       "title": "Retire this game?",
       "subtitle": "Save what you tracked so far, but log it with no winner. Decks won't get a win or loss — it still counts toward games played.",
       "confirm": "Retire game",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "What happened? Venue closing, someone had to leave...",
+      "notesHint": "Shown on the game recap to everyone in the pod.",
       "reasons": {
         "time": { "label": "Out of time", "sub": "Venue closing, gotta go" },
         "stall": { "label": "Long stall", "sub": "No one can close it out" },
         "left": { "label": "Player had to leave", "sub": "Can't continue without them" },
         "vibe": { "label": "Vibe died", "sub": "Just not happening tonight" },
         "rules": { "label": "Unwindable mistake", "sub": "State can't be reconstructed" },
-        "other": { "label": "Other", "sub": "Add a note when you log it" }
+        "other": { "label": "Other", "sub": "Add a note below" }
       }
     },
     "cancel": {
@@ -171,6 +174,7 @@
     "addQuestion": "Anything to add?",
     "optional": "(optional)",
     "takeawayPlaceholder": "Highlights, gripes, shoutouts...",
+    "noteVisibility": "Everyone in the pod can read your note.",
     "skip": "Skip",
     "saving": "Saving...",
     "finish": "Finish",
@@ -203,6 +207,8 @@
     "deleteConfirmTitle": "Delete this game?",
     "deleteConfirmBody": "This permanently removes the game and all survey responses.",
     "deleting": "Deleting...",
-    "yesDelete": "Yes, delete"
+    "yesDelete": "Yes, delete",
+    "retireTitle": "Why it was retired",
+    "retireNotes": "Retire notes"
   }
 }

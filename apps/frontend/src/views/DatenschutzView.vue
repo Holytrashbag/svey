@@ -4,7 +4,7 @@ import { legalContact } from "@/lib/legal-contact";
 </script>
 
 <template>
-  <LegalPage title="Datenschutz" updated="12. Juni 2026">
+  <LegalPage title="Datenschutz" updated="8. Oktober 2026">
     <p>
       Diese Datenschutzerklärung informiert über Art, Umfang und Zweck der Verarbeitung
       personenbezogener Daten innerhalb von Svey (im Folgenden „die App") nach der
@@ -53,6 +53,14 @@ import { legalContact } from "@/lib/legal-contact";
       Umfragen nach dem Spiel (inkl. Freitext). Trägst du Gäste oder vorab eingeladene Mitglieder
       ein, verarbeiten wir den dabei angegebenen Anzeigenamen dieser Personen. Rechtsgrundlage: Art.
       6 Abs. 1 lit. b und lit. f DSGVO.
+    </p>
+    <p>
+      Freitext-Notizen aus der Umfrage nach dem Spiel sind für alle Mitglieder der Playgroup
+      sichtbar, in der die Partie gespielt wurde, und erscheinen im Spielrückblick beim Namen der
+      Person, für deren Platz sie erfasst wurden (bei Gästen beim eingetragenen Gastnamen). Dasselbe
+      gilt für Notizen zu vorzeitig beendeten Partien. Löschst du dein Konto, werden deine
+      Umfrage-Antworten samt Notizen gelöscht; Notizen zu vorzeitig beendeten Partien gehören zur
+      Partie und bleiben für die Playgroup erhalten, solange die Partie besteht.
     </p>
 
     <h2>3. Cookies</h2>

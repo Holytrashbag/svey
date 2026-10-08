@@ -43,6 +43,12 @@ export type GameResultData = {
   abandonNotes?: string
 }
 
+/**
+ * Reasons for retiring a game early. The ids are stored with the game
+ * (`abandonReasons`); labels live under `game.endReasons.retire.reasons.<id>`.
+ */
+export const RETIRE_REASON_IDS = ['time', 'stall', 'left', 'vibe', 'rules', 'other'] as const
+
 export const SESSION_KEY = 'svey:game-session'
 export const RESULT_KEY = 'svey:game-result'
 
