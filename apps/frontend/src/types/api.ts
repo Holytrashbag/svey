@@ -79,6 +79,8 @@ export type GameDetailPlayer = {
   isWinner:   boolean
   deathCause: string
   deathAt:    number | null
+  /** Survey note, visible to every pod member; null when the player left none. */
+  note:       string | null
 }
 
 export type GameDetail = {
@@ -89,6 +91,9 @@ export type GameDetail = {
   endReason:   string
   players:     GameDetailPlayer[]
   survey:      { avgFun: number | null; avgAgency: number | null; responseCount: number } | null
+  /** Retire reason ids and notes; empty/null unless endReason is 'abandoned'. */
+  abandonReasons: string[]
+  abandonNotes:   string | null
 }
 
 export type CreateGamePlayer = {
@@ -111,6 +116,7 @@ export type CreateGameBody = {
   durationSec: number
   endReason:   'won' | 'draw' | 'abandoned'
   abandonReasons?: string[]
+  abandonNotes?: string
   players:     CreateGamePlayer[]
 }
 

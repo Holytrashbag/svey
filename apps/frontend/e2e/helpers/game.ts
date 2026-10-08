@@ -100,3 +100,8 @@ export async function stepCmdrDmg(sheet: Locator, attacker: string, dir: 'More' 
 export async function closeSheet(sheet: Locator) {
   await sheet.getByRole('button', { name: 'Close', exact: true }).click()
 }
+
+// One player's row in the recap's player list.
+export function recapPlayer(page: Page, name: string): Locator {
+  return page.getByRole('list', { name: 'Players', exact: true }).getByRole('listitem').filter({ hasText: name })
+}

@@ -39,6 +39,8 @@ export type GameResultData = {
   endReason: 'won' | 'draw' | 'abandoned'
   /** Reason ids picked when the game was retired early. */
   abandonReasons?: string[]
+  /** Free-text note typed when the game was retired early. */
+  abandonNotes?: string
 }
 
 export const SESSION_KEY = 'svey:game-session'
