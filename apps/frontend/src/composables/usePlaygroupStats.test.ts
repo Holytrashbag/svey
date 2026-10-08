@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { computed } from 'vue'
 import { usePlaygroupStats } from './usePlaygroupStats'
-import type { PlaygroupDetail, PlaygroupMemberDetail } from '@/types/api'
+import type { PlaygroupDetail, PlaygroupMemberDetail, RecentGameItem } from '@/types/api'
 
 function member(over: Partial<PlaygroupMemberDetail>): PlaygroupMemberDetail {
   return {
@@ -19,20 +19,27 @@ function pod(members: PlaygroupMemberDetail[]): PlaygroupDetail {
   }
 }
 
+function game(winnerId: string): RecentGameItem {
+  return { id: `g-${Math.random()}`, winnerId, deck: 'Deck', when: '2026-01-01T00:00:00.000Z', duration: '1h' }
+}
+
 describe('usePlaygroupStats', () => {
-  it("winrate is the current member's win rate over games played", () => {
+  it("wins come from the current member's pod record", () => {
     const pg = computed<PlaygroupDetail | null>(() => pod([
       member({ id: 'me', you: true, wins: 3, gamesPlayed: 4, winRate: 75, threat: 7.5 }),
       member({ id: 'other', wins: 4, gamesPlayed: 10, winRate: 40, threat: 4 }),
     ]))
-    expect(usePlaygroupStats(pg).value.winrate).toBe(75)
+    const stats = usePlaygroupStats(pg).value
+    expect(stats.wins).toBe(3)
+    expect(stats.threat).toBe(7.5)
+    expect(stats).not.toHaveProperty('winrate')
   })
 
-  it('winrate is null when the current member has not played', () => {
-    const pg = computed<PlaygroupDetail | null>(() => pod([
-      member({ id: 'me', you: true }),
-      member({ id: 'other', wins: 4, gamesPlayed: 10, winRate: 40, threat: 4 }),
-    ]))
-    expect(usePlaygroupStats(pg).value.winrate).toBeNull()
+  it('streak counts consecutive recent pod wins and stops at the first game someone else won', () => {
+    const pg = computed<PlaygroupDetail | null>(() => ({
+      ...pod([member({ id: 'me', you: true }), member({ id: 'other' })]),
+      recent: [game('me'), game('me'), game('other'), game('me')],
+    }))
+    expect(usePlaygroupStats(pg).value.streak).toBe(2)
   })
 })

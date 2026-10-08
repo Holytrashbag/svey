@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useId } from "vue";
 import { useI18n } from "vue-i18n";
 
 defineProps<{
@@ -9,6 +10,8 @@ defineProps<{
 }>();
 
 const { t } = useI18n();
+const labelId = useId();
+const subId = useId();
 </script>
 
 <template>
@@ -27,16 +30,17 @@ const { t } = useI18n();
         <div class="text-[10px] text-fg-3 uppercase tracking-eyebrow font-semibold mt-2">{{ t("home.season.wins") }}</div>
       </div>
       <!-- Winrate — neutral white -->
-      <div class="bg-bg-1 p-4 rounded-2xl">
+      <div class="bg-bg-1 p-4 rounded-2xl" role="group" :aria-labelledby="`${labelId} ${subId}`">
         <div
           class="font-display font-bold text-fg-0 tabular-nums text-[30px] tracking-[-0.03em] leading-none"
         >
           <template v-if="winrate === null">—</template>
           <template v-else>{{ winrate }}<span class="text-[16px] text-fg-3 ml-0.5 font-medium">%</span></template>
         </div>
-        <div class="text-[10px] text-fg-3 uppercase tracking-eyebrow font-semibold mt-2">
+        <div :id="labelId" class="text-[10px] text-fg-3 uppercase tracking-eyebrow font-semibold mt-2">
           {{ t("home.season.winShare") }}
         </div>
+        <div :id="subId" class="text-[10px] text-fg-4 font-medium mt-0.5">{{ t("home.season.allPods") }}</div>
       </div>
       <!-- Threat — arcane purple -->
       <div class="bg-bg-1 p-4 rounded-2xl">

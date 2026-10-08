@@ -22,4 +22,32 @@ describe('SeasonStrip', () => {
     })
     expect(wrapper.text()).toContain('75%')
   })
+
+  it('labels the win rate as covering all pods', () => {
+    const wrapper = mount(SeasonStrip, {
+      props: { wins: 3, winrate: 20, threat: 7.5, playgroupName: 'Tuesday' },
+      global: { plugins: [i18n] },
+    })
+    expect(wrapper.text()).toContain('All pods')
+    const group = wrapper.find('[role="group"]')
+    expect(group.exists()).toBe(true)
+    const names = (group.attributes('aria-labelledby') ?? '')
+      .split(' ')
+      .map((id) => wrapper.find(`[id="${id}"]`).text())
+    expect(names).toEqual(['Win rate', 'All pods'])
+    expect(group.text()).toContain('20%')
+  })
+
+  it('uses the German all-pods label', () => {
+    setI18nLocale('de')
+    try {
+      const wrapper = mount(SeasonStrip, {
+        props: { wins: 3, winrate: 20, threat: 7.5, playgroupName: 'Tuesday' },
+        global: { plugins: [i18n] },
+      })
+      expect(wrapper.text()).toContain('Alle Pods')
+    } finally {
+      setI18nLocale('en')
+    }
+  })
 })

@@ -201,7 +201,8 @@ export type PodDeckItem = {
 export type PlayerStats = {
   totalGames:   number
   totalWins:    number
-  winRate:      number
+  /** Finished games only; null when there are none. */
+  winRate:      number | null
   avgPlacement: number | null
 }
 

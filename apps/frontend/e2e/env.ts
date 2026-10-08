@@ -7,6 +7,9 @@ export const APP_URL = 'http://localhost:4174'
 // Seeded by apps/api/jobs/seed-demo.ts (email already verified).
 export const DEMO_USER = { name: 'Alex', email: 'demo@example.com', password: 'svey-demo' }
 export const SECOND_USER = { name: 'Jordan', email: 'jordan@example.com', password: 'svey-demo' }
+// Reserved for personal-stats specs: no other spec may post games for Kenji, so his
+// all-pods totals only move by what those specs post.
+export const THIRD_USER = { name: 'Kenji', email: 'kenji@example.com', password: 'svey-demo' }
 
 // Signed-in browser state of DEMO_USER, written by auth.setup.ts.
 export const AUTH_FILE = 'e2e/.auth/demo.json'
