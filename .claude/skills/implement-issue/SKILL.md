@@ -34,6 +34,7 @@ Spawn the planner with `Agent`, `subagent_type: "Plan"`, the model from the tabl
 - Add a **Tests first** section that lists every test to write before the implementation. Give each test its file path, test name and the Definition-of-done or Scope item it proves, at two layers:
   - **Unit:** colocated `*.test.ts` next to the pure logic (`apps/frontend/src/lib/`, `apps/api/lib/`, `apps/api/services/`)
   - **End-to-end:** Playwright specs in `apps/frontend/e2e/` (see [End-to-end layer](#end-to-end-layer))
+- If the change is visual (see [PR media](#pr-media-visual-changes-only)), add a **PR media** section that names the screens to capture, or the steps of the flow to record when it spans several screens.
 - Resolve each Open question with the answer the issue proposes. If the issue proposes none and the answer changes behaviour, mark the question **BLOCKING**.
 - Return the plan as Markdown, nothing else.
 
@@ -106,6 +107,7 @@ Follow the `ship-pr` skill from step 3 onwards. The branch and commits already e
 - Title: the issue title, which is already a Conventional Commit.
 - Body: `Closes #<n>` under "What & why", plus one line on how each Open question was resolved.
 - "How I tested it": the tests written first, the number of rounds it took, and the commands that ran. Only list checks that actually ran.
+- Visual change: capture and publish the media **before** `gh pr create` (see [PR media](#pr-media-visual-changes-only)) and add a `## Screenshots` section between "What & why" and "How I tested it".
 - Watch the PR checks. Report the PR URL. Do not merge.
 
 ## 7b. Still red after round 5 → human review
@@ -143,8 +145,85 @@ The repo has a **Playwright suite** in `apps/frontend/e2e/` that runs against th
 
 If a Definition-of-done item can only be proven in a real browser or against a real database, say so in the plan and in the PR's "How I tested it", and list it as a manual check. Don't pretend a test covers it.
 
+## PR media (visual changes only)
+
+Attach screenshots when the diff changes what a user sees: `.vue` templates or classes, `src/style.css`, or visible copy. Skip it for API-only, pure-logic, test and tooling changes. When the change spans several screens (a flow, a sheet that opens, a step-by-step state change), add a short GIF of the flow next to the screenshots.
+
+**What GitHub can show.** A PR body can't upload files from the CLI. Real video players (`.mp4`/`.mov`) only appear for files dragged into the web editor; `<video>` tags are stripped and a link to a raw `.mp4` stays a plain link. Images and **animated GIFs** referenced by URL render inline. So: PNG screenshots plus an optional GIF, hosted on the orphan `pr-media` branch of this public repo. It's never merged and pushing it triggers no workflow.
+
+**1. Capture** with a throwaway spec, run after the first green round. It reuses the e2e stack and fixtures, so every screen shows seeded demo data. Never capture from the dev database or production.
+
+```ts
+// apps/frontend/e2e/_pr-media.spec.ts — never commit this file
+import { test } from './fixtures'
+import { openSetup, startGame /* … */ } from './helpers/game'
+
+const out = process.env.PR_MEDIA_DIR ?? 'test-results/pr-media'
+test.use({
+  deviceScaleFactor: 2,                                       // crisp PNGs
+  video: { mode: 'on', size: { width: 360, height: 800 } },   // multi-screen only
+  launchOptions: { slowMo: 300 },                             // a GIF a human can follow
+})
+
+test('pr media', async ({ page, pod }) => {
+  await openSetup(page, pod.id)
+  // … drive to each state from the plan's PR media section, waiting for it
+  // to be visible so a sheet isn't caught mid-transition …
+  await page.screenshot({ path: `${out}/01-setup.png`, animations: 'disabled' })
+})
+```
+
+```bash
+pnpm db:up
+PR_MEDIA_DIR=<scratchpad>/pr-media pnpm --filter frontend exec playwright test _pr-media
+rm apps/frontend/e2e/_pr-media.spec.ts
+```
+
+Number the files in flow order (`01-…`, `02-…`). Use the English locale; add a German shot (a second test inside `test.describe` with `test.use({ locale: 'de-DE' })`; the app falls back to the browser language) when the change adds copy that might wrap or overflow at 360px.
+
+**2. GIF (multi-screen only).** Playwright writes `video.webm` under `apps/frontend/test-results/<test-dir>/`. Its bundled ffmpeg can't write GIFs, so convert with a system `ffmpeg`:
+
+```bash
+ffmpeg -y -i <video.webm> -vf "hqdn3d,mpdecimate,fps=10,scale=300:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=64:stats_mode=diff[p];[b][p]paletteuse=dither=none:diff_mode=rectangle" -loop 0 <scratchpad>/pr-media/flow.gif
+```
+
+The recording is noisy VP8, so a plain palette conversion changes every pixel of every frame: an 11 s flow came out at 6.8 MB. Denoising (`hqdn3d`), dropping duplicate frames (`mpdecimate`) and a 64-colour palette without dithering brought the same clip to 2.9 MB, still readable. Keep it under 5 MB: trim with `-ss`/`-t`, or go down to `scale=240`. If `ffmpeg` isn't installed, skip the GIF, rely on the numbered screenshots and say so in the PR. Don't install packages without asking.
+
+**3. Publish** to `pr-media` under `issue-<n>/` through a separate worktree, so the feature branch stays untouched:
+
+```bash
+MEDIA=<scratchpad>/pr-media-worktree
+if git ls-remote --exit-code --heads origin pr-media >/dev/null; then
+  git fetch origin pr-media && git worktree add -B pr-media "$MEDIA" origin/pr-media
+else
+  git worktree add --orphan -b pr-media "$MEDIA"   # first use only
+fi
+mkdir -p "$MEDIA/issue-<n>" && cp <scratchpad>/pr-media/* "$MEDIA/issue-<n>/"
+git -C "$MEDIA" add "issue-<n>" && git -C "$MEDIA" commit -m "chore: pr media for #<n>" -m "<Co-Authored-By trailer>"
+git -C "$MEDIA" push origin pr-media
+SHA=$(git -C "$MEDIA" rev-parse HEAD)
+git worktree remove "$MEDIA"
+```
+
+Link files by commit SHA, not branch, so a re-push never shows stale images: `https://raw.githubusercontent.com/Holytrashbag/svey/$SHA/issue-<n>/<file>`. Never rewrite or delete existing files on `pr-media`: older PRs link to them.
+
+**4. Embed** in the PR body. Screenshots go side by side at phone width, the GIF below:
+
+```html
+## Screenshots
+
+<table><tr>
+<td><img src="https://raw.githubusercontent.com/Holytrashbag/svey/<SHA>/issue-<n>/01-setup.png" width="240" alt="Setup with six seats"></td>
+<td><img src="https://raw.githubusercontent.com/Holytrashbag/svey/<SHA>/issue-<n>/02-sheet.png" width="240" alt="Commander damage sheet open"></td>
+</tr></table>
+
+<img src="https://raw.githubusercontent.com/Holytrashbag/svey/<SHA>/issue-<n>/flow.gif" width="240" alt="Opening the sheet and dealing damage">
+```
+
+If the capture fails, open the PR anyway and list the screenshots as missing under "How I tested it". Media never blocks a green PR.
+
 ## Guardrails
 
 - Never merge, never push to `main`, never touch the release-please PR.
-- Commenting on the issue and pushing the feature branch are part of this skill. Anything else outward-facing (closing or relabelling issues, opening other PRs) needs the user's OK.
+- Commenting on the issue, pushing the feature branch and pushing media to `pr-media` are part of this skill. Anything else outward-facing (closing or relabelling issues, opening other PRs) needs the user's OK.
 - All the rules from `.claude/CLAUDE.md` apply to both the tests and the code.
