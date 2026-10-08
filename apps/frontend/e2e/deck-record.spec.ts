@@ -129,21 +129,21 @@ test.describe('decklist record', () => {
 
   test('sorting the decklist by most wins and best winrate orders the rows by their record', async ({ page }) => {
     await page.goto('/decks')
-    await expect(page.getByRole('button', { name: /Sort by/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Sort:/ })).toBeVisible()
     await expect(page.locator('button.rounded-2xl').first()).toBeVisible()
 
     const rowTexts = () => page.locator('button.rounded-2xl').allInnerTexts()
     const nums = (rows: string[], re: RegExp) => rows.map((r) => Number(re.exec(r)?.[1] ?? NaN))
     const nonIncreasing = (xs: number[]) => xs.every((x, i) => i === 0 || (xs[i - 1] ?? 0) >= x)
 
-    await page.getByRole('button', { name: /Sort by/ }).click()
-    await page.getByRole('button', { name: 'Best winrate' }).click()
+    await page.getByRole('button', { name: /^Sort:/ }).click()
+    await page.getByRole('button', { name: 'Best winrate', exact: true }).click()
     const byRate = nums(await rowTexts(), /(\d+)%/)
     expect(byRate.length).toBeGreaterThan(0)
     expect(nonIncreasing(byRate)).toBe(true)
 
-    await page.getByRole('button', { name: /Sort by/ }).click()
-    await page.getByRole('button', { name: 'Most wins' }).click()
+    await page.getByRole('button', { name: /^Sort:/ }).click()
+    await page.getByRole('button', { name: 'Most wins', exact: true }).click()
     expect(nonIncreasing(nums(await rowTexts(), /(\d+)W/))).toBe(true)
   })
 })
