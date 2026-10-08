@@ -176,6 +176,28 @@ describe('GameSetupView deck picker', () => {
     expect(router.currentRoute.value.path).toBe(`/pods/${POD_ID}/game/tracker`)
   })
 
+  it('starting with 4 seats and 3 filled stores only the filled seats, in setup order', async () => {
+    const { wrapper, router } = await mountView()
+    await seatPlayer(wrapper, 0, 'ana')
+    await pickDeck(wrapper, 0, 'Atraxa')
+    await seatGuest(wrapper, 2, 'Gus')
+    await pickDeck(wrapper, 2, 'Krenko')
+    await seatPlayer(wrapper, 3, 'ben')
+    await pickDeck(wrapper, 3, 'Zada')
+
+    const start = wrapper.findAll('button').find(b => b.text().includes('Start game'))
+    expect(start, 'start button').toBeDefined()
+    await start!.trigger('click')
+    await flushPromises()
+
+    const session = JSON.parse(localStorage.getItem(SESSION_KEY) ?? 'null')
+    expect(session.seats).toHaveLength(3)
+    expect(session.seats.map((s: { playerId: string | null; guestName: string }) => s.playerId ?? s.guestName))
+      .toEqual(['ana', 'Gus', 'ben'])
+    expect(session.seats.every((s: { deckId: string | null }) => s.deckId !== null)).toBe(true)
+    expect(router.currentRoute.value.path).toBe(`/pods/${POD_ID}/game/tracker`)
+  })
+
   it('deck sheet shows a load error when the pod decks request fails', async () => {
     mockApi(() => Promise.reject(new Error('Server exploded')))
     const { wrapper } = await mountView()
