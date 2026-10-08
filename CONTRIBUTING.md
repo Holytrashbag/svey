@@ -11,9 +11,10 @@ To run the app locally, start with [Getting started](#getting-started) below. Th
 
 ## Getting started
 
-You need **Node ≥ 22.12**, **pnpm** and **Docker** (for Postgres). No OAuth keys or Archidekt account are required: the seed creates a demo pod you can sign into with email and password.
+You need **Node 26** (pinned in [`.nvmrc`](.nvmrc), the version CI and the Docker images use), **pnpm** and **Docker** (for Postgres). No OAuth keys or Archidekt account are required: the seed creates a demo pod you can sign into with email and password.
 
 ```sh
+nvm use                         # or install Node 26 another way
 corepack enable                 # installs the pnpm version pinned in package.json
 pnpm install
 
@@ -28,6 +29,8 @@ Sign in with **`demo@example.com`** / **`svey-demo`**.
 Notes:
 - New email sign-ups work too. Without SMTP settings, the verification link is printed to the API console.
 - Discord and Google login need a client ID and secret in `apps/api/.env`.
+- Always use pnpm, never npm or yarn: CI installs from the single root `pnpm-lock.yaml` with `--frozen-lockfile`.
+- A longer walkthrough (what `pnpm dev` does, ports, troubleshooting) is in [docs/onboarding/03-local-setup.md](docs/onboarding/03-local-setup.md).
 
 <details>
 <summary>All scripts</summary>
