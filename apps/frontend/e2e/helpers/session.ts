@@ -18,7 +18,7 @@ export async function isolateNetwork(context: BrowserContext) {
   )
 }
 
-// A 360px phone page signed in as another seeded user. The caller closes the context.
+// A 360px phone page signed in as another seeded user. The caller awaits `close()`.
 export async function signInContext(browser: Browser, user: { email: string; password: string }) {
   const context = await browser.newContext({
     baseURL: APP_URL,
@@ -34,5 +34,11 @@ export async function signInContext(browser: Browser, user: { email: string; pas
     data: { email: user.email, password: user.password },
   })
   expect(res.status()).toBe(200)
-  return { context, page: await context.newPage() }
+  const page = await context.newPage()
+  // Drop the route handlers first so a request still in flight can't stall the close.
+  const close = async () => {
+    await context.unrouteAll({ behavior: 'ignoreErrors' })
+    await context.close()
+  }
+  return { context, page, close }
 }

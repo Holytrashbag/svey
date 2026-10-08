@@ -95,7 +95,7 @@ test.describe('decklist record', () => {
       await expect(row).toContainText(`${Math.round(((w0 + 2) / games) * 100)}%`)
       await expect(row).toContainText(`${games} games`)
     } finally {
-      await jordan.context.close()
+      await jordan.close()
     }
   })
 
@@ -123,7 +123,7 @@ test.describe('decklist record', () => {
       // The detail page still counts the retired game; the decklist does not.
       expect(g1.games - g0.games).toBe(l1.wins + l1.losses - (l0.wins + l0.losses) + 1)
     } finally {
-      await jordan.context.close()
+      await jordan.close()
     }
   })
 
@@ -149,7 +149,7 @@ test.describe('decklist record', () => {
       const byWins = nums(await rowTexts(), /(\d+)\s*W/)
       expect(nonIncreasing(byWins)).toBe(true)
     } finally {
-      await jordan.context.close()
+      await jordan.close()
     }
   })
 })
