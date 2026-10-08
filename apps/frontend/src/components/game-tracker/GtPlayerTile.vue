@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 import SbIcon from '@/components/ui/SbIcon.vue'
 import { apiUrl } from '@/lib/api'
 import { GT_TINT, MANA_BG } from '@/lib/mtg'
-import { deathCauseKey, fmtClock, relDeath } from '@/lib/game-tracker'
+import { chipLevel, deathCauseKey, fmtClock, maxCmdrDmg, relDeath } from '@/lib/game-tracker'
 import type { GtPlayer } from '@/lib/game-tracker'
 
 const props = defineProps<{
@@ -66,12 +66,24 @@ const lifeColor = computed(() => {
   if (props.player.life <= 5) return '#F87171'
   return '#F5F4FB'
 })
-const totalCmdrDmg = computed(() => {
-  const vals = Object.values(props.player.cmdrDmg)
-  return vals.length ? Math.max(...vals) : 0
-})
-const poisonAlert = computed(() => props.player.poison >= 7)
-const cmdrAlert = computed(() => totalCmdrDmg.value >= 18)
+const cmdrMax = computed(() => maxCmdrDmg(props.player))
+const poisonLevel = computed(() => chipLevel(props.player.poison, 7, 10))
+const cmdrLevel = computed(() => chipLevel(cmdrMax.value, 18, 21))
+
+const CHIP_CLASS = {
+  poison: {
+    none: 'bg-overlay-1 border-divider text-fg-0',
+    warn: 'bg-success/20 border-success/50 text-success',
+    lethal: 'bg-success/20 border-success text-success',
+  },
+  cmdr: {
+    none: 'bg-overlay-1 border-divider text-fg-0',
+    warn: 'bg-crown-wash border-crown/50 text-crown-2',
+    lethal: 'bg-crown-wash border-crown text-crown-2',
+  },
+} as const
+const poisonChipClass = computed(() => CHIP_CLASS.poison[poisonLevel.value])
+const cmdrChipClass = computed(() => CHIP_CLASS.cmdr[cmdrLevel.value])
 
 const avatarTintClass = computed(() => {
   if (props.player.isGuest) return 'bg-[#3D2E10] text-crown'
@@ -223,42 +235,30 @@ onUnmounted(() => {
       >+</button>
     </div>
 
-    <!-- Footer: poison + cmdr dmg -->
-    <div class="grid gap-1.25 shrink-0" style="grid-template-columns: 1fr 1fr; padding: 0 7px 8px;">
+    <!-- Footer: poison + max single-commander dmg -->
+    <div class="grid grid-cols-2 gap-1.5 shrink-0 px-1.75 pb-2">
       <button
-        class="flex items-center justify-center gap-1.25 rounded-[9px] border cursor-pointer font-mono font-bold transition-colors"
-        style="padding: 6px; font-size: 11.5px; letter-spacing: 0.02em;"
-        :style="{
-          background: poisonAlert ? 'rgba(75,174,110,0.16)' : 'rgba(255,255,255,0.03)',
-          borderColor: player.poison >= 10 ? '#4BAE6E' : (poisonAlert ? 'rgba(75,174,110,0.40)' : 'rgba(255,255,255,0.06)'),
-          color: poisonAlert ? '#86EFAC' : '#8A88A3',
-          opacity: player.dead ? 0.55 : 1,
-        }"
+        class="flex items-center justify-center gap-1.5 rounded-[9px] border cursor-pointer font-mono font-bold text-base p-1.5 transition-colors"
+        :class="[poisonChipClass, player.dead && 'opacity-55']"
         :disabled="player.dead"
         @click="emit('poisonClick')"
       >
-        <svg width="11" height="11" viewBox="0 0 24 24" :fill="poisonAlert ? '#86EFAC' : '#4BAE6E'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 2.5c-.5 0-1 .3-1.3.7C8.9 5.4 4 11 4 15a8 8 0 1 0 16 0c0-4-4.9-9.6-6.7-11.8A1.6 1.6 0 0 0 12 2.5z"/>
         </svg>
         <span class="tabular-nums">{{ player.poison }}</span>
-        <span style="color: #5A586E; font-weight: 600; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;">{{ t('game.tracker.poison') }}</span>
+        <span class="text-fg-2 font-semibold text-[10px] tracking-[0.08em] uppercase">{{ t('game.tracker.poison') }}</span>
       </button>
 
       <button
-        class="flex items-center justify-center gap-1.25 rounded-[9px] border cursor-pointer font-mono font-bold transition-colors"
-        style="padding: 6px; font-size: 11.5px; letter-spacing: 0.02em;"
-        :style="{
-          background: cmdrAlert ? 'rgba(244,185,66,0.16)' : 'rgba(255,255,255,0.03)',
-          borderColor: totalCmdrDmg >= 21 ? '#F4B942' : (cmdrAlert ? 'rgba(244,185,66,0.40)' : 'rgba(255,255,255,0.06)'),
-          color: cmdrAlert ? '#FCD34D' : '#8A88A3',
-          opacity: player.dead ? 0.55 : 1,
-        }"
+        class="flex items-center justify-center gap-1.5 rounded-[9px] border cursor-pointer font-mono font-bold text-base p-1.5 transition-colors"
+        :class="[cmdrChipClass, player.dead && 'opacity-55']"
         :disabled="player.dead"
         @click="emit('cmdrDmgClick')"
       >
-        <SbIcon name="swords" :size="12" :color="cmdrAlert ? '#FCD34D' : '#F4B942'" :stroke="2" />
-        <span class="tabular-nums">{{ totalCmdrDmg }}</span>
-        <span style="color: #5A586E; font-weight: 600; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;">{{ t('game.tracker.cmd') }}</span>
+        <SbIcon name="swords" :size="16" color="currentColor" :stroke="2" />
+        <span class="tabular-nums">{{ cmdrMax }}</span>
+        <span class="text-fg-2 font-semibold text-[10px] tracking-[0.08em] uppercase">{{ t('game.tracker.cmd') }}</span>
       </button>
     </div>
 
