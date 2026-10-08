@@ -19,7 +19,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <!-- Pill bar — grid: [rotated info | buttons | normal info] -->
+  <!-- Pill bar — grid: [rotated alive | buttons | timer + alive] -->
   <div
     class="shrink-0 grid items-center relative z-[2]"
     style="
@@ -36,12 +36,6 @@ const emit = defineEmits<{
     <!-- Top-bank view (rotated 180° so those players can read it) -->
     <div style="transform: rotate(180deg);">
       <div class="flex items-center gap-2.5 justify-end px-3 min-w-0">
-        <div
-          class="font-mono font-bold tabular-nums leading-none"
-          style="font-size: 17px; letter-spacing: 0.02em;"
-          :style="{ color: gameEnded ? '#8A88A3' : '#F5F4FB' }"
-        >{{ fmtClock(elapsedSec) }}</div>
-        <div class="w-px h-4 bg-overlay-3 shrink-0" />
         <div class="flex flex-col items-center leading-none min-w-0">
           <div class="flex items-baseline gap-1 font-bold">
             <span
