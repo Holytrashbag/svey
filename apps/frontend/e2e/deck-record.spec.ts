@@ -127,29 +127,23 @@ test.describe('decklist record', () => {
     }
   })
 
-  test('sorting the decklist by most wins and best winrate orders the rows by their record', async ({ browser }) => {
-    const jordan = await signInContext(browser, SECOND_USER)
-    try {
-      const page = jordan.page
-      await page.goto('/decks')
-      await expect(page.getByRole('button', { name: new RegExp(KENRITH) })).toBeVisible()
+  test('sorting the decklist by most wins and best winrate orders the rows by their record', async ({ page }) => {
+    await page.goto('/decks')
+    await expect(page.getByRole('button', { name: /Sort by/ })).toBeVisible()
+    await expect(page.locator('button.rounded-2xl').first()).toBeVisible()
 
-      const rowTexts = () => page.locator('button.rounded-2xl').allInnerTexts()
-      const nums = (rows: string[], re: RegExp) => rows.map((r) => Number(re.exec(r)?.[1] ?? NaN))
-      const nonIncreasing = (xs: number[]) => xs.every((x, i) => i === 0 || (xs[i - 1] ?? 0) >= x)
+    const rowTexts = () => page.locator('button.rounded-2xl').allInnerTexts()
+    const nums = (rows: string[], re: RegExp) => rows.map((r) => Number(re.exec(r)?.[1] ?? NaN))
+    const nonIncreasing = (xs: number[]) => xs.every((x, i) => i === 0 || (xs[i - 1] ?? 0) >= x)
 
-      await page.getByRole('button', { name: /Sort by/ }).click()
-      await page.getByRole('button', { name: 'Best winrate' }).click()
-      const byRate = nums(await rowTexts(), /(\d+)%/)
-      expect(byRate.length).toBeGreaterThan(0)
-      expect(nonIncreasing(byRate)).toBe(true)
+    await page.getByRole('button', { name: /Sort by/ }).click()
+    await page.getByRole('button', { name: 'Best winrate' }).click()
+    const byRate = nums(await rowTexts(), /(\d+)%/)
+    expect(byRate.length).toBeGreaterThan(0)
+    expect(nonIncreasing(byRate)).toBe(true)
 
-      await page.getByRole('button', { name: /Sort by/ }).click()
-      await page.getByRole('button', { name: 'Most wins' }).click()
-      const byWins = nums(await rowTexts(), /(\d+)\s*W/)
-      expect(nonIncreasing(byWins)).toBe(true)
-    } finally {
-      await jordan.close()
-    }
+    await page.getByRole('button', { name: /Sort by/ }).click()
+    await page.getByRole('button', { name: 'Most wins' }).click()
+    expect(nonIncreasing(nums(await rowTexts(), /(\d+)W/))).toBe(true)
   })
 })
