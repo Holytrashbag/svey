@@ -11,6 +11,9 @@ export const SECOND_USER = { name: 'Jordan', email: 'jordan@example.com', passwo
 // all-pods totals only move by what those specs post.
 // Reading as a non-member (recap-notes.spec.ts) is fine: it posts nothing for him.
 export const THIRD_USER = { name: 'Kenji', email: 'kenji@example.com', password: 'svey-demo' }
+// Reserved for pod-order.spec.ts: no other spec may create pods or post games for
+// Priya, so her pod list is the seeded Tuesday pod plus what that spec creates.
+export const FOURTH_USER = { name: 'Priya', email: 'priya@example.com', password: 'svey-demo' }
 
 // Signed-in browser state of DEMO_USER, written by auth.setup.ts.
 export const AUTH_FILE = 'e2e/.auth/demo.json'
