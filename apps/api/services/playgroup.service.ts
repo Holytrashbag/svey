@@ -5,6 +5,7 @@ import type { Db } from '../lib/db.ts'
 import { playgroup, playgroupMember, game, gamePlayer, deck, decklistCard } from '../db/schema.ts'
 import { Errors } from '../lib/errors.ts'
 import { summarizePodGames, tallyMemberRecords, threatRating, winRate } from '../lib/pod-stats.ts'
+import { sortPodsByRecentActivity } from '../lib/pod-order.ts'
 import { activeMemberIdByUserId, assertActivePodMember, buildPodDecks, type PodDeckItem } from '../lib/pod-decks.ts'
 import * as notificationService from './notification.service.ts'
 
@@ -285,7 +286,7 @@ export async function listPlaygroups(dbClient: Db, userId: string): Promise<Play
   // (shouldn't happen but guard anyway)
   const activeGroupIds = new Set(active.map(a => a.id))
   return {
-    active,
+    active:  sortPodsByRecentActivity(active),
     pending: pending.filter(p => !activeGroupIds.has(p.playgroupId)),
   }
 }
