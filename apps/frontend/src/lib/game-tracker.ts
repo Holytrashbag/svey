@@ -60,10 +60,22 @@ export function applyCmdrDmg(
   return { cmdrDmg: { [attackerSeatIdx]: next }, life: p.life - (next - prev) }
 }
 
+/** Highest damage taken from a single commander (lethal at 21), not the sum. */
+export function maxCmdrDmg(p: GtPlayer): number {
+  const vals = Object.values(p.cmdrDmg)
+  return vals.length ? Math.max(...vals) : 0
+}
+
+export type ChipLevel = 'none' | 'warn' | 'lethal'
+
+export function chipLevel(value: number, warnAt: number, lethalAt: number): ChipLevel {
+  if (value >= lethalAt) return 'lethal'
+  return value >= warnAt ? 'warn' : 'none'
+}
+
 export function autoDeath(p: GtPlayer): DeathCause | null {
   if (p.dead) return null
-  const vals = Object.values(p.cmdrDmg)
-  if (vals.length && Math.max(...vals) >= 21) return 'cmdr'
+  if (maxCmdrDmg(p) >= 21) return 'cmdr'
   if (p.life <= 0) return 'life'
   if (p.poison >= 10) return 'poison'
   return null

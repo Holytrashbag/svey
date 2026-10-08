@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { applyCmdrDmg, autoDeath, CMDR_DMG_MAX, deathCauseKey, fmtClock, gridForCount, relDeath, type GtPlayer } from './game-tracker'
+import { applyCmdrDmg, autoDeath, CMDR_DMG_MAX, chipLevel, deathCauseKey, fmtClock, maxCmdrDmg, gridForCount, relDeath, type GtPlayer } from './game-tracker'
 
 function player(overrides: Partial<GtPlayer> = {}): GtPlayer {
   return {
@@ -172,5 +172,31 @@ describe('gridForCount', () => {
       const seats = gridForCount(n).rows.flat().sort((a, b) => a - b)
       expect(seats).toEqual(Array.from({ length: n }, (_, i) => i))
     }
+  })
+})
+
+describe('maxCmdrDmg', () => {
+  it('is 0 without commander damage', () => {
+    expect(maxCmdrDmg(player())).toBe(0)
+  })
+
+  it('does not sum damage from different commanders', () => {
+    expect(maxCmdrDmg(player({ cmdrDmg: { 1: 7, 2: 7, 3: 7 } }))).toBe(7)
+  })
+
+  it('returns the highest single-commander damage', () => {
+    expect(maxCmdrDmg(player({ cmdrDmg: { 1: 18, 2: 3 } }))).toBe(18)
+  })
+})
+
+describe('chipLevel', () => {
+  it('maps a value to none / warn / lethal', () => {
+    expect(chipLevel(7, 18, 21)).toBe('none')
+    expect(chipLevel(18, 18, 21)).toBe('warn')
+    expect(chipLevel(20, 18, 21)).toBe('warn')
+    expect(chipLevel(21, 18, 21)).toBe('lethal')
+    expect(chipLevel(6, 7, 10)).toBe('none')
+    expect(chipLevel(7, 7, 10)).toBe('warn')
+    expect(chipLevel(10, 7, 10)).toBe('lethal')
   })
 })
