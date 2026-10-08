@@ -7,7 +7,7 @@ import GsSeatCard from '@/components/game-setup/GsSeatCard.vue'
 import GsPlayerSheet from '@/components/game-setup/GsPlayerSheet.vue'
 import GsDeckSheet from '@/components/game-setup/GsDeckSheet.vue'
 import { MANA, AVATAR_ROLE } from '@/lib/mtg'
-import { toGsDeck } from '@/lib/game-setup'
+import { toGsDeck, isSeatFilled, buildSessionSeats } from '@/lib/game-setup'
 import type { GsSeat, GsPod, GsDeck } from '@/lib/game-setup'
 import { SESSION_KEY } from '@/lib/game-tracker'
 import type { GameSessionData } from '@/lib/game-tracker'
@@ -54,7 +54,7 @@ const activeSeatIdx  = ref<number | null>(null)
 
 // ── Computed: seat helpers ─────────────────────────────────────────────────────
 
-const filledSeats   = computed(() => seats.value.filter(s => s.playerId || s.isGuest))
+const filledSeats   = computed(() => seats.value.filter(isSeatFilled))
 const seatsWithDeck = computed(() => filledSeats.value.filter(s => s.deckId))
 const canStart      = computed(() =>
   filledSeats.value.length >= 2 && seatsWithDeck.value.length === filledSeats.value.length,
@@ -157,21 +157,7 @@ function startGame() {
   const session: GameSessionData = {
     podId,
     startLife: 40,
-    seats: seats.value.map(s => {
-      const member = pod.value.members.find(m => m.id === s.playerId)
-      const deck   = s.deckId ? setupDecks.value.find(d => d.id === s.deckId) : null
-      return {
-        playerId:      s.playerId,
-        playerName:    member?.name ?? '',
-        isYou:         member?.you ?? false,
-        isGuest:       s.isGuest,
-        guestName:     s.guestName,
-        deckId:        s.deckId,
-        deckName:      deck?.name ?? null,
-        deckColors:    deck?.colors ?? [],
-        deckCommander: deck?.commander ?? null,
-      }
-    }),
+    seats: buildSessionSeats(seats.value, pod.value.members, setupDecks.value),
   }
   localStorage.setItem(SESSION_KEY, JSON.stringify(session))
   router.push(`/pods/${podId}/game/tracker`)

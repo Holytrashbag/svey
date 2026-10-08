@@ -3,6 +3,8 @@ import {
   toGsDeck,
   deckChoicesForSeat,
   isBorrowedDeck,
+  isSeatFilled,
+  buildSessionSeats,
   type GsDeck,
   type GsMember,
   type GsSeat,
@@ -93,5 +95,51 @@ describe('isBorrowedDeck', () => {
     expect(isBorrowedDeck(guestSeat, krenko)).toBe(true)
     expect(isBorrowedDeck(seatFor('ben'), krenko)).toBe(false)
     expect(isBorrowedDeck(seatFor('ana'), undefined)).toBe(false)
+  })
+})
+
+const blank: GsSeat = { playerId: null, isGuest: false, guestName: '', deckId: null }
+const withDeck = (seat: GsSeat, deckId: string): GsSeat => ({ ...seat, deckId })
+
+describe('isSeatFilled', () => {
+  it('is false for a blank seat and true for a member or guest seat', () => {
+    expect(isSeatFilled(blank)).toBe(false)
+    expect(isSeatFilled(seatFor('ana'))).toBe(true)
+    expect(isSeatFilled(guestSeat)).toBe(true)
+  })
+})
+
+describe('buildSessionSeats', () => {
+  const ana = withDeck(seatFor('ana'), 'd-atraxa')
+  const ben = withDeck(seatFor('ben'), 'd-zada')
+  const gus = withDeck(guestSeat, 'd-krenko')
+
+  it('drops empty seats: 4 seats with 3 filled gives 3 session seats', () => {
+    const out = buildSessionSeats([ana, blank, gus, ben], members, decks)
+    expect(out).toHaveLength(3)
+    expect(out.some(s => s.playerId === null && !s.isGuest)).toBe(false)
+  })
+
+  it('keeps the setup order of the filled seats', () => {
+    const out = buildSessionSeats([blank, ben, blank, ana], members, decks)
+    expect(out.map(s => s.playerId)).toEqual(['ben', 'ana'])
+  })
+
+  it('maps a member seat to name, isYou and deck details', () => {
+    expect(buildSessionSeats([ana], members, decks)[0]).toEqual({
+      playerId: 'ana', playerName: 'Ana', isYou: true, isGuest: false, guestName: '',
+      deckId: 'd-atraxa', deckName: 'Atraxa', deckColors: ['G'], deckCommander: null,
+    })
+  })
+
+  it('maps a guest seat with its guest name, no playerId and a borrowed deck', () => {
+    expect(buildSessionSeats([gus], members, decks)[0]).toMatchObject({
+      playerId: null, playerName: '', isYou: false, isGuest: true, guestName: 'Gus',
+      deckId: 'd-krenko', deckName: 'Krenko',
+    })
+  })
+
+  it('returns an empty list when every seat is empty', () => {
+    expect(buildSessionSeats([blank, blank], members, decks)).toEqual([])
   })
 })

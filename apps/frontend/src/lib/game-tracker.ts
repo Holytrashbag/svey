@@ -14,20 +14,22 @@ export type GtPlayer = {
   deathCause: DeathCause | null
 }
 
+export type GameSessionSeat = {
+  playerId:      string | null
+  playerName:    string
+  isYou:         boolean
+  isGuest:       boolean
+  guestName:     string
+  deckId:        string | null
+  deckName:      string | null
+  deckColors:    string[]
+  deckCommander: string | null
+}
+
 export type GameSessionData = {
   podId: string
   startLife: number
-  seats: Array<{
-    playerId:      string | null
-    playerName:    string
-    isYou:         boolean
-    isGuest:       boolean
-    guestName:     string
-    deckId:        string | null
-    deckName:      string | null
-    deckColors:    string[]
-    deckCommander: string | null
-  }>
+  seats: GameSessionSeat[]
 }
 
 export type GameResultData = {

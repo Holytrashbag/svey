@@ -1,4 +1,5 @@
 import type { PodDeckItem } from '@/types/api'
+import type { GameSessionSeat } from './game-tracker'
 
 export type GsSeat = {
   playerId: string | null
@@ -74,4 +75,31 @@ export function deckChoicesForSeat(
 
 export function isBorrowedDeck(seat: GsSeat, deck: GsDeck | undefined): boolean {
   return !!deck && (seat.isGuest || deck.owner !== seat.playerId)
+}
+
+export function isSeatFilled(seat: GsSeat): boolean {
+  return seat.playerId !== null || seat.isGuest
+}
+
+/** Session seats for the tracker: empty seats are dropped, setup order is kept. */
+export function buildSessionSeats(
+  seats: readonly GsSeat[],
+  members: readonly GsMember[],
+  decks: readonly GsDeck[],
+): GameSessionSeat[] {
+  return seats.filter(isSeatFilled).map(s => {
+    const member = members.find(m => m.id === s.playerId)
+    const deck   = s.deckId ? decks.find(d => d.id === s.deckId) : undefined
+    return {
+      playerId:      s.playerId,
+      playerName:    member?.name ?? '',
+      isYou:         member?.you ?? false,
+      isGuest:       s.isGuest,
+      guestName:     s.guestName,
+      deckId:        s.deckId,
+      deckName:      deck?.name ?? null,
+      deckColors:    deck?.colors ?? [],
+      deckCommander: deck?.commander ?? null,
+    }
+  })
 }
