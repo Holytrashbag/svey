@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, useId } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GtSheet from './GtSheet.vue'
 import SbIcon from '@/components/ui/SbIcon.vue'
-import type { GtPlayer } from '@/lib/game-tracker'
+import { RETIRE_REASON_IDS, type GtPlayer } from '@/lib/game-tracker'
 
 type Mode = 'concede' | 'retire' | 'cancel'
 
@@ -15,22 +15,28 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: []
-  confirm: [pickedReasons: string[]]
+  // `note` is only filled in retire mode (stored as the game's abandonNotes).
+  confirm: [pickedReasons: string[], note: string]
 }>()
 
 const { t } = useI18n()
 
 const picked = ref<string[]>([])
+const note   = ref('')
+const noteHintId = useId()
 
 watch(() => [props.open, props.mode, props.player?.seatIdx], () => {
-  if (props.open) picked.value = []
+  if (props.open) {
+    picked.value = []
+    note.value   = ''
+  }
 })
 
 // Reason ids are persisted with the game; labels live under
 // `game.endReasons.<mode>.reasons.<id>`.
 const REASON_IDS: Record<Mode, string[]> = {
   concede: ['noway', 'time', 'salty', 'rules', 'social'],
-  retire:  ['time', 'stall', 'left', 'vibe', 'rules', 'other'],
+  retire:  [...RETIRE_REASON_IDS],
   cancel:  ['mulligan', 'rules', 'misdeal', 'time', 'other'],
 }
 
@@ -55,6 +61,10 @@ const cfg = computed(() => {
     style: STYLE[mode],
   }
 })
+
+function onConfirm() {
+  emit('confirm', picked.value, props.mode === 'retire' ? note.value.trim() : '')
+}
 
 function toggle(id: string) {
   if (picked.value.includes(id)) {
@@ -107,6 +117,20 @@ function toggle(id: string) {
         </button>
       </div>
 
+      <!-- Retire notes (shown on the recap) -->
+      <div v-if="mode === 'retire'" class="mt-3">
+        <textarea
+          v-model="note"
+          rows="2"
+          maxlength="500"
+          :aria-label="t('game.endReasons.retire.notesLabel')"
+          :aria-describedby="noteHintId"
+          :placeholder="t('game.endReasons.retire.notesPlaceholder')"
+          class="w-full rounded-xl bg-bg-1 border border-white/8 text-fg-0 placeholder-fg-4 resize-none px-3 py-2.5 text-sm font-body outline-none focus:border-arcane/50 transition-colors duration-160"
+        />
+        <p :id="noteHintId" class="text-caption text-fg-3 mt-1">{{ t('game.endReasons.retire.notesHint') }}</p>
+      </div>
+
       <!-- Actions -->
       <div class="flex gap-2 mt-4">
         <button
@@ -122,7 +146,7 @@ function toggle(id: string) {
             color: cfg.style.color,
             borderColor: cfg.style.border,
           }"
-          @click="emit('confirm', picked)"
+          @click="onConfirm"
         >{{ cfg.confirmLabel }}</button>
       </div>
     </div>

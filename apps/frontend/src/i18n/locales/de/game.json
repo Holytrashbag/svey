@@ -138,13 +138,16 @@
       "title": "Dieses Spiel ohne Sieger beenden?",
       "subtitle": "Speichert, was du bisher getrackt hast, aber ohne Sieger. Decks bekommen keinen Sieg oder Niederlage — es zählt trotzdem zu den gespielten Spielen.",
       "confirm": "Ohne Sieger beenden",
+      "notesLabel": "Notizen",
+      "notesPlaceholder": "Was ist passiert? Location schließt, jemand musste los...",
+      "notesHint": "Steht im Spielrückblick für alle im Pod.",
       "reasons": {
         "time": { "label": "Keine Zeit mehr", "sub": "Location schließt, wir müssen los" },
         "stall": { "label": "Langer Stillstand", "sub": "Keiner kann es zu Ende bringen" },
         "left": { "label": "Spieler musste gehen", "sub": "Geht nicht ohne sie weiter" },
         "vibe": { "label": "Stimmung gekippt", "sub": "Heute läuft's einfach nicht" },
         "rules": { "label": "Nicht behebbarer Fehler", "sub": "Spielzustand nicht rekonstruierbar" },
-        "other": { "label": "Sonstiges", "sub": "Notiz beim Erfassen hinzufügen" }
+        "other": { "label": "Sonstiges", "sub": "Notiz unten hinzufügen" }
       }
     },
     "cancel": {
@@ -171,6 +174,7 @@
     "addQuestion": "Noch etwas hinzuzufügen?",
     "optional": "(optional)",
     "takeawayPlaceholder": "Highlights, Beschwerden, Shoutouts...",
+    "noteVisibility": "Alle im Pod können deine Notiz lesen.",
     "skip": "Überspringen",
     "saving": "Wird gespeichert...",
     "finish": "Fertig",
@@ -203,6 +207,8 @@
     "deleteConfirmTitle": "Dieses Spiel löschen?",
     "deleteConfirmBody": "Entfernt das Spiel und alle Umfrageantworten dauerhaft.",
     "deleting": "Wird gelöscht...",
-    "yesDelete": "Ja, löschen"
+    "yesDelete": "Ja, löschen",
+    "retireTitle": "Warum abgebrochen",
+    "retireNotes": "Notizen zum Abbruch"
   }
 }

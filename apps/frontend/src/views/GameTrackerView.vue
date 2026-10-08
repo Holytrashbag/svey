@@ -185,13 +185,13 @@ function openConcede(idx: number) {
 }
 function closeSheet() { activeSheet.value = 'none' }
 
-function onConcedeConfirm(reasons: string[]) {
+function onConcedeConfirm(reasons: string[], note: string) {
   closeSheet()
   if (concedeMode.value === 'concede') {
     onConcede(activeSeatIdx.value)
   } else if (concedeMode.value === 'retire') {
     // Logged with no winner; still goes through the survey and counts as played.
-    finishGame('abandoned', reasons)
+    finishGame('abandoned', reasons, note || undefined)
   } else {
     // Cancel: nothing is recorded.
     localStorage.removeItem(SESSION_KEY)
@@ -199,7 +199,7 @@ function onConcedeConfirm(reasons: string[]) {
   }
 }
 
-function finishGame(endReason: GameResultData['endReason'], abandonReasons?: string[]) {
+function finishGame(endReason: GameResultData['endReason'], abandonReasons?: string[], abandonNotes?: string) {
   ended.value = true
   closeSheet()
   const result: GameResultData = {
@@ -208,6 +208,7 @@ function finishGame(endReason: GameResultData['endReason'], abandonReasons?: str
     durationSec: elapsed.value,
     endReason,
     abandonReasons,
+    abandonNotes,
   }
   localStorage.setItem(RESULT_KEY, JSON.stringify(result))
   void router.push(`/pods/${podId}/game/survey`)

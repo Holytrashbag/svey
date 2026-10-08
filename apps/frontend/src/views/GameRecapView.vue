@@ -8,6 +8,8 @@ import SbAvatar from '@/components/ui/SbAvatar.vue'
 import SbBadge from '@/components/ui/SbBadge.vue'
 import SbIcon from '@/components/ui/SbIcon.vue'
 import SbSpinner from '@/components/ui/SbSpinner.vue'
+import GameRecapPlayerRow from '@/components/games/GameRecapPlayerRow.vue'
+import GameRecapRetireCard from '@/components/games/GameRecapRetireCard.vue'
 import { fmtClock } from '@/lib/game-tracker'
 import { useFormat } from '@/composables/useFormat'
 import { useGameStore } from '@/stores/useGameStore'
@@ -51,14 +53,10 @@ const sortedPlayers = computed(() => {
   })
 })
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
-
-const DEATH_CAUSES = ['life', 'cmdr_dmg', 'poison', 'conceded', 'special']
-
-function deathLabel(cause: string): string {
-  if (cause === 'none') return ''
-  return t(`game.recap.deathCause.${DEATH_CAUSES.includes(cause) ? cause : 'eliminated'}`)
-}
+const showRetireCard = computed(() =>
+  recap.value?.endReason === 'abandoned'
+  && (recap.value.abandonReasons.length > 0 || recap.value.abandonNotes != null),
+)
 
 // ─── Delete ────────────────────────────────────────────────────────────────────
 
@@ -159,41 +157,24 @@ const { onNav } = useNav()
         </div>
       </div>
 
+      <!-- Retire reasons + notes -->
+      <GameRecapRetireCard
+        v-if="showRetireCard"
+        :reasons="recap.abandonReasons"
+        :notes="recap.abandonNotes"
+      />
+
       <!-- Players -->
       <div class="mx-5 mb-5">
         <div class="text-[10px] text-fg-3 uppercase tracking-widest font-semibold mb-3">{{ t('game.recap.players') }}</div>
-        <div class="card-surface overflow-hidden">
-          <div
+        <ul class="card-surface overflow-hidden" :aria-label="t('game.recap.players')">
+          <GameRecapPlayerRow
             v-for="(player, idx) in sortedPlayers"
-            :key="player.name"
-            class="flex items-center gap-3 px-4 py-3"
-            :class="idx < sortedPlayers.length - 1 && 'border-b border-hairline'"
-          >
-            <SbAvatar :name="player.name" :size="34" />
-
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-[13.5px] text-fg-0">{{ player.name }}</span>
-                <SbBadge v-if="player.isWinner" variant="win" class="text-eyebrow">{{ t('game.recap.won') }}</SbBadge>
-              </div>
-              <div class="text-caption text-fg-2 italic truncate mt-0.5">
-                {{ player.deck?.name ?? t('game.recap.noDeck') }}
-              </div>
-            </div>
-
-            <div class="text-right shrink-0">
-              <template v-if="player.isWinner">
-                <div class="text-meta text-crown font-semibold">{{ t('game.recap.life', { n: player.finalLife }) }}</div>
-              </template>
-              <template v-else>
-                <div class="text-meta text-fg-2 font-medium">{{ deathLabel(player.deathCause) }}</div>
-                <div v-if="player.deathAt != null" class="font-mono text-[10px] text-fg-4 mt-0.5">
-                  @ {{ fmtClock(player.deathAt) }}
-                </div>
-              </template>
-            </div>
-          </div>
-        </div>
+            :key="idx"
+            :player="player"
+            :last="idx === sortedPlayers.length - 1"
+          />
+        </ul>
       </div>
 
       <!-- Survey -->

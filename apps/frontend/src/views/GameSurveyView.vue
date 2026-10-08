@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, useId } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SbButton from '@/components/ui/SbButton.vue'
@@ -30,6 +30,8 @@ const funRating    = ref<number | null>(null)
 const agencyRating = ref<number | null>(null)
 const takeaway     = ref('')
 const isSubmitting = ref(false)
+const noteId       = useId()
+const noteHintId   = useId()
 
 onMounted(() => {
   const raw    = localStorage.getItem(RESULT_KEY)
@@ -94,6 +96,7 @@ async function onFinish(skipped: boolean) {
     durationSec: result.value.durationSec,
     endReason:   result.value.endReason,
     abandonReasons: result.value.abandonReasons,
+    abandonNotes:   result.value.abandonNotes,
     players:     result.value.players.map((p, i) => {
       const seat  = session.value!.seats[p.seatIdx]!
       const draft = responses.value.find(r => r.playerIdx === i)
@@ -209,15 +212,18 @@ function onAbandon() {
 
       <!-- Free text -->
       <div class="mb-2">
-        <div class="text-eyebrow font-bold uppercase tracking-[0.10em] text-fg-3 mb-3">
+        <label :for="noteId" class="block text-eyebrow font-bold uppercase tracking-[0.10em] text-fg-3 mb-3">
           {{ t('game.survey.addQuestion') }} <span class="normal-case font-normal tracking-normal">{{ t('game.survey.optional') }}</span>
-        </div>
+        </label>
         <textarea
+          :id="noteId"
           v-model="takeaway"
           rows="3"
+          :aria-describedby="noteHintId"
           :placeholder="t('game.survey.takeawayPlaceholder')"
           class="w-full rounded-xl bg-bg-1 border border-white/8 text-fg-0 placeholder-fg-4 resize-none px-4 py-3 text-sm font-body outline-none focus:border-arcane/50 transition-colors duration-160"
         />
+        <p :id="noteHintId" class="text-caption text-fg-3 mt-1">{{ t('game.survey.noteVisibility') }}</p>
       </div>
 
       <!-- Error -->

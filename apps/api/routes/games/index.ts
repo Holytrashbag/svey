@@ -25,6 +25,7 @@ const CreateGameSchema = z.object({
   durationSec: z.number().int().min(0),
   endReason:   z.enum(['won', 'draw', 'abandoned']),
   abandonReasons: z.array(z.string().max(32)).max(10).optional(),
+  abandonNotes: z.string().max(500).optional(),
   players:     z.array(CreateGamePlayerSchema).min(2),
 })
 
