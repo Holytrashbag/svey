@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { test as base, expect } from '@playwright/test'
-import { API_CONTEXT_OPTIONS, API_URL, APP_URL, SECOND_USER } from './env'
+import { API_CONTEXT_OPTIONS, API_URL, SECOND_USER } from './env'
+import { isolateNetwork } from './helpers/session'
 
 export type Pod = { id: string; name: string }
 
@@ -14,18 +15,7 @@ export const test = base.extend<Fixtures>({
   // the card endpoints (which proxy Scryfall) answer 404 as if the art is missing.
   network: [
     async ({ context }, use) => {
-      await context.route(/^(?!http:\/\/localhost[:/])/, (route) => route.abort())
-      await context.route(`${API_URL}/api/cards/**`, (route) =>
-        route.fulfill({
-          status: 404,
-          contentType: 'application/json',
-          headers: {
-            'Access-Control-Allow-Origin': APP_URL,
-            'Access-Control-Allow-Credentials': 'true',
-          },
-          body: JSON.stringify({ error: { code: 'NOT_FOUND', message: 'stubbed in e2e' } }),
-        }),
-      )
+      await isolateNetwork(context)
       await use()
     },
     { auto: true },
