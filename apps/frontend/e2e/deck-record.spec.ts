@@ -73,39 +73,16 @@ async function playKenrithGames(alex: Page, pod: Pod, kenrithId: string, jordanO
 }
 
 test.describe('decklist record', () => {
-  test('decklist counts wins, losses and draws for a borrowed deck and skips retired games', async ({ page, pod, browser }) => {
-    const jordan = await signInContext(browser, SECOND_USER)
-    try {
-      const all = await decks(jordan.page)
-      const kenrith = all.find((d) => d.name === KENRITH)
-      const other = all.find((d) => d.name !== KENRITH && d.name !== '')
-      expect(kenrith && other).toBeTruthy()
-      const { wins: w0, losses: l0 } = kenrith!
-
-      await playKenrithGames(page, pod, kenrith!.id, other!.id)
-
-      const after = await findDeck(jordan.page, KENRITH)
-      expect(after.wins).toBe(w0 + 2)
-      expect(after.losses).toBe(l0 + 2)
-
-      await jordan.page.goto('/decks')
-      const row = jordan.page.getByRole('button', { name: new RegExp(KENRITH) })
-      const games = w0 + l0 + 4
-      await expect(row).toContainText(`${w0 + 2}W`)
-      await expect(row).toContainText(`${Math.round(((w0 + 2) / games) * 100)}%`)
-      await expect(row).toContainText(`${games} games`)
-    } finally {
-      await jordan.close()
-    }
-  })
-
-  test('decklist record matches the deck general stats minus retired games', async ({ page, pod, browser }) => {
+  // One test posts the games, because deck records are global and parallel tests
+  // posting to the same deck would see each other's games in their deltas.
+  test('decklist counts wins, losses and draws for a borrowed deck, skips retired games and matches the detail stats', async ({ page, pod, browser }) => {
     const jordan = await signInContext(browser, SECOND_USER)
     try {
       const all = await decks(jordan.page)
       const kenrith = all.find((d) => d.name === KENRITH)
       const other = all.find((d) => d.name !== KENRITH)
       expect(kenrith && other).toBeTruthy()
+      const { wins: w0, losses: l0 } = kenrith!
 
       type Stats = { general: { games: number; wins: number } | null }
       const stats = async () => {
@@ -113,15 +90,24 @@ test.describe('decklist record', () => {
         return ((await res.json()) as Stats).general ?? { games: 0, wins: 0 }
       }
       const g0 = await stats()
-      const l0 = kenrith!
 
       await playKenrithGames(page, pod, kenrith!.id, other!.id)
 
+      const after = await findDeck(jordan.page, KENRITH)
+      expect(after.wins).toBe(w0 + 2)
+      expect(after.losses).toBe(l0 + 2)
+
+      // The detail page's "general" scope agrees on wins and still counts the retired game.
       const g1 = await stats()
-      const l1 = await findDeck(jordan.page, KENRITH)
-      expect(l1.wins - l0.wins).toBe(g1.wins - g0.wins)
-      // The detail page still counts the retired game; the decklist does not.
-      expect(g1.games - g0.games).toBe(l1.wins + l1.losses - (l0.wins + l0.losses) + 1)
+      expect(g1.wins - g0.wins).toBe(2)
+      expect(g1.games - g0.games).toBe(5)
+
+      await jordan.page.goto('/decks')
+      const row = jordan.page.getByRole('button', { name: new RegExp(KENRITH) })
+      const games = w0 + l0 + 4
+      await expect(row).toContainText(`${w0 + 2}W`)
+      await expect(row).toContainText(`${Math.round(((w0 + 2) / games) * 100)}%`)
+      await expect(row).toContainText(`${games} games`)
     } finally {
       await jordan.close()
     }
