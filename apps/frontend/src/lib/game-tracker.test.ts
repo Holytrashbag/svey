@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { autoDeath, deathCauseKey, fmtClock, gridForCount, relDeath, type GtPlayer } from './game-tracker'
+import { applyCmdrDmg, autoDeath, CMDR_DMG_MAX, deathCauseKey, fmtClock, gridForCount, relDeath, type GtPlayer } from './game-tracker'
 
 function player(overrides: Partial<GtPlayer> = {}): GtPlayer {
   return {
@@ -44,13 +44,68 @@ describe('autoDeath', () => {
     expect(autoDeath(player({ cmdrDmg: { 1: 15, 2: 15 } }))).toBeNull()
   })
 
-  it('reports life before poison before commander damage when several apply', () => {
-    expect(autoDeath(player({ life: 0, poison: 10, cmdrDmg: { 1: 21 } }))).toBe('life')
-    expect(autoDeath(player({ poison: 10, cmdrDmg: { 1: 21 } }))).toBe('poison')
+  it('reports commander damage before life before poison when several apply', () => {
+    expect(autoDeath(player({ life: 0, cmdrDmg: { 1: 21 } }))).toBe('cmdr')
+    expect(autoDeath(player({ poison: 10, cmdrDmg: { 1: 21 } }))).toBe('cmdr')
+    expect(autoDeath(player({ life: 0, poison: 10 }))).toBe('life')
+    expect(autoDeath(player({ life: 0, poison: 10, cmdrDmg: { 1: 21 } }))).toBe('cmdr')
+  })
+
+  it('still reports poison at 10 when commander damage is below 21', () => {
+    expect(autoDeath(player({ poison: 10, cmdrDmg: { 1: 20 } }))).toBe('poison')
   })
 
   it('never re-kills a player who is already dead', () => {
     expect(autoDeath(player({ dead: true, life: 0 }))).toBeNull()
+  })
+})
+
+// Mirrors the merge updatePlayer does with the patch.
+function apply(p: GtPlayer, attacker: number, dmg: number): GtPlayer {
+  const patch = applyCmdrDmg(p, attacker, dmg)
+  return { ...p, ...patch, cmdrDmg: { ...p.cmdrDmg, ...patch.cmdrDmg } }
+}
+
+describe('applyCmdrDmg', () => {
+  it('adding commander damage lowers life by the same amount', () => {
+    expect(applyCmdrDmg(player({ life: 40 }), 1, 3)).toEqual({ cmdrDmg: { 1: 3 }, life: 37 })
+  })
+
+  it('removing commander damage restores the same amount', () => {
+    const p = player({ life: 35, cmdrDmg: { 1: 5 } })
+    expect(applyCmdrDmg(p, 1, 2)).toEqual({ cmdrDmg: { 1: 2 }, life: 38 })
+  })
+
+  it('a bulk change moves life by the whole delta', () => {
+    expect(applyCmdrDmg(player({ life: 40, cmdrDmg: { 1: 4 } }), 1, 11).life).toBe(33)
+  })
+
+  it('patches only the chosen attacker', () => {
+    const p = player({ cmdrDmg: { 1: 4, 2: 6 } })
+    expect(applyCmdrDmg(p, 2, 7).cmdrDmg).toEqual({ 2: 7 })
+    expect(apply(p, 2, 7).cmdrDmg).toEqual({ 1: 4, 2: 7 })
+  })
+
+  it('clamped no-ops leave life alone', () => {
+    expect(applyCmdrDmg(player({ life: 40, cmdrDmg: { 1: 0 } }), 1, -1).life).toBe(40)
+    const max = player({ life: 40, cmdrDmg: { 1: CMDR_DMG_MAX } })
+    expect(applyCmdrDmg(max, 1, CMDR_DMG_MAX + 1).life).toBe(40)
+  })
+
+  it('leaves poison unaffected', () => {
+    expect(applyCmdrDmg(player({ poison: 7 }), 1, 3)).not.toHaveProperty('poison')
+    expect(apply(player({ poison: 7 }), 1, 3).poison).toBe(7)
+  })
+
+  it('ignores changes on a dead player', () => {
+    const dead = player({ dead: true, life: 0, cmdrDmg: { 1: 21 } })
+    expect(applyCmdrDmg(dead, 1, 20)).toEqual({})
+  })
+
+  it('records cmdr when one hit reaches 21 and 0 life together', () => {
+    const next = apply(player({ life: 1, cmdrDmg: { 1: 20 } }), 1, 21)
+    expect(next.life).toBe(0)
+    expect(autoDeath(next)).toBe('cmdr')
   })
 })
 

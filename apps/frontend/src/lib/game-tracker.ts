@@ -42,6 +42,14 @@ export type GameResultData = {
 export const SESSION_KEY = 'svey:game-session'
 export const RESULT_KEY = 'svey:game-result'
 
+export const CMDR_DMG_MAX = 99
+
+export function applyCmdrDmg(
+  _p: GtPlayer, _attackerSeatIdx: number, _dmg: number,
+): Partial<Pick<GtPlayer, 'cmdrDmg' | 'life'>> {
+  throw new Error('not implemented')
+}
+
 export function autoDeath(p: GtPlayer): DeathCause | null {
   if (p.dead) return null
   if (p.life <= 0) return 'life'

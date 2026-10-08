@@ -85,3 +85,18 @@ export function player(body: CreateGameBody, name: string) {
   if (!found) throw new Error(`no player "${name}" in the saved game`)
   return found
 }
+
+export async function openCmdrDmg(page: Page, target: string): Promise<Locator> {
+  // The chip's accessible name is its text, ending in the lowercase "cmd" label.
+  await tile(page, target).getByRole('button', { name: /cmd$/ }).click()
+  return dialog(page, `Commander damage on ${target}`)
+}
+
+export async function stepCmdrDmg(sheet: Locator, attacker: string, dir: 'More' | 'Less', times = 1) {
+  const button = sheet.getByRole('button', { name: `${dir} damage from ${attacker}`, exact: true })
+  for (let i = 0; i < times; i++) await button.click()
+}
+
+export async function closeSheet(sheet: Locator) {
+  await sheet.getByRole('button', { name: 'Close', exact: true }).click()
+}
