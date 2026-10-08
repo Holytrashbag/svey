@@ -8,6 +8,7 @@ defineProps<{
   open: boolean
   title: string
   subtitle?: string
+  tall?: boolean
 }>()
 
 const emit = defineEmits<{ close: [] }>()
@@ -34,7 +35,7 @@ const emit = defineEmits<{ close: [] }>()
            transition-transform duration-260"
     :inert="!open"
     :class="open ? 'translate-y-0' : 'translate-y-full'"
-    style="padding: 12px 20px 26px; max-height: 78%;"
+    :style="{ padding: '12px 20px 26px', maxHeight: tall ? '92%' : '78%', height: tall ? '92%' : undefined }"
   >
     <!-- Drag handle -->
     <div class="w-9 h-1 rounded-full bg-overlay-5 mx-auto mb-3.5 shrink-0" />
