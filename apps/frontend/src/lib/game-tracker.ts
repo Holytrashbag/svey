@@ -42,12 +42,28 @@ export type GameResultData = {
 export const SESSION_KEY = 'svey:game-session'
 export const RESULT_KEY = 'svey:game-result'
 
+export const CMDR_DMG_MAX = 99
+
+/**
+ * Patch for setting one attacker's commander damage on `p`; life moves by the
+ * opposite delta. `cmdrDmg` holds only the changed attacker, updatePlayer merges
+ * it onto the existing record. Dead players are never changed (no revive).
+ */
+export function applyCmdrDmg(
+  p: GtPlayer, attackerSeatIdx: number, dmg: number,
+): Partial<Pick<GtPlayer, 'cmdrDmg' | 'life'>> {
+  if (p.dead) return {}
+  const prev = p.cmdrDmg[attackerSeatIdx] ?? 0
+  const next = Math.min(CMDR_DMG_MAX, Math.max(0, Math.round(dmg)))
+  return { cmdrDmg: { [attackerSeatIdx]: next }, life: p.life - (next - prev) }
+}
+
 export function autoDeath(p: GtPlayer): DeathCause | null {
   if (p.dead) return null
-  if (p.life <= 0) return 'life'
-  if (p.poison >= 10) return 'poison'
   const vals = Object.values(p.cmdrDmg)
   if (vals.length && Math.max(...vals) >= 21) return 'cmdr'
+  if (p.life <= 0) return 'life'
+  if (p.poison >= 10) return 'poison'
   return null
 }
 
