@@ -38,6 +38,11 @@ updates:
       # it together with them instead.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # TypeScript 7.0 ships no compiler API, which vue-tsc and typescript-eslint
+      # need, and the TS 7 announcement says Vue projects should stay on 6.0.
+      # Lift this once both support the 7.1 API.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     groups:
       # Minor/patch bumps land together; majors get their own PR to review.
       minor-and-patch:
