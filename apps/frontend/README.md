@@ -1,6 +1,6 @@
 # frontend
 
-Vue 3 single-page app for Svey, built with Vite and installable as a PWA. Setup lives in the [root README](../../README.md).
+Vue 3 single-page app for Svey, built with Vite and installable as a PWA. Setup lives in [CONTRIBUTING.md](../../CONTRIBUTING.md#getting-started).
 
 ## Layout
 

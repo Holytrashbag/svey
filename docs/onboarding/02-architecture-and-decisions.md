@@ -175,7 +175,7 @@ sequenceDiagram
 
 ## Unit 6: Known gaps
 
-From the README and the code as of this writing. Good first issues often come from this list.
+From [CONTRIBUTING.md](../../CONTRIBUTING.md#known-gaps) and the code as of this writing. Good first issues often come from this list.
 
 | Gap | Where it shows |
 |---|---|
