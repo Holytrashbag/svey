@@ -16,7 +16,7 @@
     "db:migrate": "pnpm --filter api migrate"
   },
   "devDependencies": {
-    "turbo": "^2.11.5",
+    "turbo": "^2.11.6",
     "typescript": "~6.0.0"
   },
   "packageManager": "pnpm@11.7.0",
